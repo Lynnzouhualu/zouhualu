@@ -1,0 +1,31 @@
+# Python server (local only)
+server.py
+*.py
+__pycache__/
+*.pyc
+
+# Old build artifacts
+build_desktop.py
+*.bak
+test.html
+test2.html
+
+# Old React/V2 files (no longer needed)
+react.min.js
+react-dom.min.js
+babel.min.js
+jsx-source.js
+index.html.v2bak
+server.js
+package.json
+
+# Enc data source files (already embedded in index.html)
+enc50.js
+enc500.js
+enc_combined.js
+new_enc_func.js
+
+# Temp/OS files
+*.tmp
+.DS_Store
+node_modules/

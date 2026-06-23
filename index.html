@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#FAF5EC">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="走花路">
+<title>走花路</title>
+<style>
+:root{--cream:#FAF5EC;--parchment:#F2E8D5;--forest:#2B4A37;--forest-mid:#3D6B52;--forest-light:#5A8F6E;--sage:#8EAD9A;--terra:#C4735A;--gold:#C4A25E;--plum:#7B5070;--ink:#1E2A22;--text2:#5A6B5F;--text3:#8A9A8E;--card:#fff;--border:#E8DFD0;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;height:-webkit-fill-available}
+body{min-height:100%;min-height:100vh;min-height:-webkit-fill-available;overflow:hidden}
+body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sans-serif;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+@media(min-width:500px){body{display:flex;justify-content:center;align-items:center;background:#1a1a1a}#app{border-radius:32px;border:8px solid #1a1a1a;height:860px;max-height:860px;box-shadow:0 20px 60px rgba(0,0,0,.15)}}
+.screen{flex:1;display:none;flex-direction:column;overflow:hidden;animation:fadeUp .4s ease both}
+.screen.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(12px + var(--safe-bot))}
+.nav{display:flex;justify-content:space-around;padding:6px 0 calc(8px + var(--safe-bot));background:rgba(255,251,245,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);flex-shrink:0}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 14px;border:none;background:none;color:var(--text3);font-size:10px;font-weight:500;cursor:pointer;font-family:inherit;transition:.2s}
+.nav-btn.active{color:var(--forest)}
+.nav-btn.active .nav-ico{background:rgba(43,74,55,.08)}
+.nav-ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:18px;transition:.2s}
+.btn{border:none;cursor:pointer;font-family:inherit;padding:14px 28px;border-radius:16px;font-size:15px;font-weight:600;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--forest);color:#fff;box-shadow:0 4px 16px rgba(43,74,55,.3)}
+.btn-g{background:linear-gradient(135deg,var(--gold),#D4B06E);color:#fff;box-shadow:0 4px 16px rgba(196,162,94,.3)}
+.inp{width:100%;padding:14px 18px;border:1.5px solid var(--border);border-radius:14px;font-size:16px;font-family:inherit;background:var(--card);color:var(--ink);outline:none;transition:.2s}
+.inp:focus{border-color:var(--forest-mid)}
+.inp::placeholder{color:var(--text3)}
+.onboard{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:linear-gradient(180deg,var(--cream),var(--parchment));text-align:center}
+.plant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:320px;margin:24px 0}
+.plant-opt{padding:16px 8px;border-radius:16px;border:2px solid var(--border);background:var(--card);cursor:pointer;transition:.2s;text-align:center}
+.plant-opt:active{transform:scale(.96)}
+.plant-opt.sel{border-color:var(--forest);box-shadow:0 0 0 3px rgba(43,74,55,.12)}
+.plant-opt .emoji{font-size:32px;margin-bottom:6px}
+.plant-opt .pname{font-size:13px;font-weight:600}
+.plant-opt .pdesc{font-size:10px;color:var(--text3);margin-top:2px}
+.home-header{padding:calc(16px + var(--safe-top)) 20px 12px;background:linear-gradient(180deg,var(--parchment),var(--cream))}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px;margin-bottom:16px}
+.home-card{padding:16px;border-radius:16px;cursor:pointer;transition:.2s;border:1px solid var(--border);background:var(--card)}
+.home-card:active{transform:scale(.97)}
+.id-header{display:flex;align-items:center;justify-content:space-between;padding:calc(14px + var(--safe-top)) 20px 10px}
+.id-header h2{font-size:20px;font-weight:700}
+.settings-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
+.warn-bar{margin:0 20px 12px;padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.5}
+.warn-yellow{background:#FFF8E1;border:1px solid #FFD54F;color:#8D6E00}
+.warn-green{background:#E8F5E9;border:1px solid #A5D6A7;color:#2E7D32}
+.cam-area{margin:0 20px;border-radius:20px;overflow:hidden;background:#1a1a1a;aspect-ratio:3/4;position:relative;display:flex;align-items:center;justify-content:center}
+.cam-area img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cam-placeholder{text-align:center;color:#aaa;padding:20px}
+.cam-placeholder .ico{font-size:48px;margin-bottom:12px}
+.scan-line{position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--forest-light),transparent);animation:scan 1.5s ease-in-out infinite alternate;box-shadow:0 0 12px var(--forest-light)}
+.cam-actions{display:flex;gap:12px;padding:16px 20px;justify-content:center}
+.cam-btn{flex:1;padding:14px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.cam-btn:active{transform:scale(.97)}
+.cam-btn.primary{background:var(--forest);color:#fff;border-color:var(--forest)}
+.cam-btn:disabled{opacity:.4;pointer-events:none}
+.result-card{margin:16px 20px;padding:20px;border-radius:20px;background:var(--card);border:1px solid var(--border);box-shadow:0 8px 32px rgba(43,74,55,.12);animation:fadeUp .4s ease}
+.result-name{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+.result-score{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--forest);color:#fff;font-weight:600}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.result-item{padding:10px;border-radius:12px;background:var(--cream);font-size:12px}
+.result-item .label{color:var(--text3);font-size:10px;margin-bottom:2px}
+.result-fact{margin-top:12px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,#FFF8E1,#FFFDE7);font-size:12px;color:#8D6E00;line-height:1.5}
+.quick-flowers{display:flex;gap:10px;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.quick-flowers::-webkit-scrollbar{display:none}
+.quick-chip{flex-shrink:0;padding:8px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);font-size:13px;cursor:pointer;white-space:nowrap;transition:.2s}
+.quick-chip:active{transform:scale(.95)}
+.gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
+.gift-card{padding:16px;border-radius:16px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:.2s;text-align:center}
+.gift-card:active{transform:scale(.97)}
+.gift-card .emoji{font-size:28px;margin-bottom:6px}
+.gift-card .gname{font-size:14px;font-weight:600}
+.gift-rec{margin:0 20px 12px;padding:18px;border-radius:18px;border:1px solid var(--border);background:var(--card);box-shadow:0 2px 16px rgba(43,74,55,.08);animation:fadeUp .3s ease}
+.gift-rec .rname{font-size:18px;font-weight:700;margin-bottom:4px}
+.gift-rec .flowers{font-size:13px;color:var(--text2);margin-bottom:8px}
+.gift-rec .lang{font-size:13px;font-style:italic;color:var(--plum);margin-bottom:8px;line-height:1.5}
+.gift-rec .meta{display:flex;gap:8px}
+.gift-back{padding:8px 20px;margin-bottom:8px;border:none;background:none;color:var(--text2);font-size:14px;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:4px}
+.enc-search-wrap{padding:0 20px;margin-bottom:12px}
+.enc-search{display:flex;gap:8px;align-items:center}
+.enc-search input{flex:1;padding:10px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:.2s}
+.enc-search input:focus{border-color:var(--forest)}
+.enc-search input::placeholder{color:var(--text3)}
+.enc-cats{display:flex;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.enc-cats::-webkit-scrollbar{display:none}
+.cat-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--card);cursor:pointer;white-space:nowrap;font-family:inherit;color:var(--text2);transition:.2s}
+.cat-chip.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+.enc-list{padding:0 20px}
+.enc-item{display:flex;gap:12px;padding:10px;border-radius:14px;border:1px solid var(--border);background:var(--card);margin-bottom:8px;cursor:pointer;transition:.2s;overflow:hidden}
+.enc-item:active{transform:scale(.98)}
+.enc-img{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--cream)}
+.enc-img-fb{width:56px;height:56px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px}
+.enc-item .info{flex:1;min-width:0}
+.enc-item .ename{font-size:14px;font-weight:700;margin-bottom:2px}
+.enc-item .edesc{font-size:11px;color:var(--text2);line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.enc-item .ediff{font-size:10px;margin-top:3px}
+.enc-item .efl{font-size:10px;color:var(--plum);margin-top:2px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.enc-detail{padding:0 20px;animation:fadeUp .3s ease}
+.enc-detail .hero-img{width:calc(100% + 40px);height:200px;object-fit:cover;border-radius:0 0 20px 20px;margin:-16px -20px 16px}
+.enc-detail .hero-fb{text-align:center;padding:36px 0;font-size:56px;border-radius:0 0 20px 20px;margin:-16px -20px 16px;width:calc(100% + 40px)}
+.enc-detail .dname{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}
+.enc-detail .dfl{text-align:center;font-size:13px;color:var(--plum);font-style:italic;margin-bottom:12px}
+.enc-detail .care-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.enc-detail .care-item{padding:10px;border-radius:12px;background:var(--cream)}
+.enc-detail .care-item .clabel{font-size:10px;color:var(--text3);margin-bottom:3px}
+.enc-detail .care-item .cval{font-size:12px;font-weight:600;line-height:1.4}
+.enc-detail .care-item .ctip{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.3}
+.enc-detail .care-section{padding:10px 12px;border-radius:12px;background:var(--cream);margin-bottom:8px}
+.enc-detail .cs-title{font-size:12px;font-weight:700;margin-bottom:4px}
+.enc-detail .cs-val{font-size:12px;line-height:1.6;color:var(--text2)}
+.enc-detail .region-box{padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,#E3F2FD,#E8EAF6);font-size:12px;line-height:1.6;color:#1A237E;margin-bottom:20px}
+.enc-no-result{text-align:center;padding:40px 20px;color:var(--text2);font-size:14px}
+.fort-zone{text-align:center;padding:20px}
+.fort-deck{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:0 20px}
+.fort-card{width:70px;height:96px;border-radius:12px;background:linear-gradient(135deg,var(--forest),var(--forest-mid));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:.3s;box-shadow:0 4px 12px rgba(43,74,55,.2)}
+.fort-card:active{transform:scale(.92)}
+.fort-result{margin:16px 20px;padding:24px;border-radius:20px;background:linear-gradient(135deg,var(--parchment),var(--cream));border:1px solid #E2D1A0;box-shadow:0 8px 32px rgba(43,74,55,.12);text-align:center;animation:fadeUp .5s ease}
+.fort-result .femoji{font-size:48px;margin-bottom:8px}
+.fort-result .ftext{font-size:14px;line-height:1.8;color:var(--ink);margin-bottom:16px}
+.fort-result .flucky{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:8px}
+.fort-result .fadvice{font-size:12px;color:var(--text2);line-height:1.6}
+.daily-card{margin:0 20px 16px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#FFF8E1,var(--cream));border:1px solid #E2D1A0;cursor:pointer}
+.daily-card .dlabel{font-size:10px;color:var(--gold);font-weight:600;letter-spacing:2px;margin-bottom:8px}
+.daily-card .dtext{font-size:13px;line-height:1.6;color:var(--ink)}
+.month-strip{display:flex;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}
+.month-strip::-webkit-scrollbar{display:none}
+.month-chip{flex-shrink:0;padding:8px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);text-align:center;min-width:64px;cursor:pointer;transition:.2s}
+.month-chip.now{border-color:var(--forest);background:rgba(43,74,55,.06)}
+.month-chip .m{font-size:10px;color:var(--text3);font-weight:500}
+.month-chip .e{font-size:20px;margin:2px 0}
+.month-chip .f{font-size:11px;font-weight:600}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeIn .2s}
+.modal-box{background:var(--card);border-radius:20px;padding:28px;width:90%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fadeUp .3s}
+.modal-box h3{font-size:18px;font-weight:700;margin-bottom:16px}
+.modal-box .field{margin-bottom:14px}
+.modal-box .flabel{font-size:12px;color:var(--text2);margin-bottom:4px}
+.modal-box .factions{display:flex;gap:10px;margin-top:20px}
+.modal-box .factions .btn{flex:1}
+.loading-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;animation:fadeIn .2s}
+.loading-overlay .spinner{font-size:36px;animation:spin 1.5s linear infinite}
+.loading-overlay .ltxt{color:#fff;font-size:13px;margin-top:8px}
+.sec-title{font-size:18px;font-weight:700;color:var(--ink);margin:20px 0 12px;padding:0 20px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes scan{0%{top:15%}100%{top:80%}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.anim-float{animation:float 3s ease-in-out infinite}
+.gf-prog{display:flex;gap:4px;padding:0 20px;margin-bottom:16px}
+.gf-prog .bar{flex:1;height:3px;border-radius:2px;background:var(--border);transition:.3s}
+.gf-prog .bar.on{background:var(--forest)}
+.gf-sec{padding:0 20px;animation:fadeUp .3s ease}
+.gf-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gf-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.gf-chips{display:flex;flex-wrap:wrap;gap:10px}
+.gf-chip{padding:12px 20px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);font-size:14px;font-weight:500;cursor:pointer;transition:.2s;font-family:inherit}
+.gf-chip:active{transform:scale(.95)}
+.gf-chip.sel{border-color:var(--forest);background:rgba(43,74,55,.08);color:var(--forest);font-weight:600}
+.gf-nav{display:flex;gap:10px;padding:16px 20px}
+.gf-nav .btn{flex:1}
+.btn-o{background:var(--card);color:var(--forest);border:1.5px solid var(--border)}
+.color-dot{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s;flex-shrink:0}
+.color-dot.sel{border-color:var(--forest);box-shadow:0 0 0 2px rgba(43,74,55,.2)}
+.gf-summary{margin:0 20px 12px;padding:12px 16px;border-radius:12px;background:rgba(43,74,55,.04);font-size:12px;color:var(--text2);display:flex;flex-wrap:wrap;gap:6px 14px}
+.gf-summary .tg{padding:3px 10px;border-radius:8px;background:var(--card);border:1px solid var(--border);font-size:11px}
+.gr-card{margin:0 20px 16px;border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--card);box-shadow:0 4px 20px rgba(43,74,55,.08);animation:fadeUp .4s ease}
+.gr-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#1a1a1a}
+.gr-overlay{position:relative;margin-top:-80px;padding:0 16px 0}
+.gr-match-badge{position:absolute;top:-70px;right:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:10px}
+.gr-emoji{font-size:48px;flex-shrink:0}
+.gr-info{flex:1;min-width:0}
+.gr-bname{font-size:18px;font-weight:700;margin-bottom:2px}
+.gr-flowers{font-size:12px;color:var(--text2);line-height:1.4}
+.gr-match{font-size:10px;font-weight:700;color:var(--forest);background:rgba(43,74,55,.1);padding:2px 8px;border-radius:8px;flex-shrink:0}
+.gr-body{padding:0 20px 16px}
+.gr-lang{font-size:13px;font-style:italic;color:var(--plum);margin-bottom:10px;line-height:1.5}
+.gr-bless{font-size:13px;line-height:1.6;color:var(--ink);padding:12px;border-radius:12px;background:linear-gradient(135deg,#FFF8E1,#FFFDE7);margin-bottom:10px}
+.gr-meta{display:flex;gap:8px;flex-wrap:wrap}
+.gr-tag{padding:4px 10px;border-radius:8px;font-size:11px;background:var(--cream);color:var(--text2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="scr-onboard" class="screen active"><div class="onboard" id="onboard-content"></div></div>
+  <div id="scr-main" class="screen">
+    <div id="tab-home" class="scroll tab-panel"></div>
+    <div id="tab-identify" class="scroll tab-panel" style="display:none"></div>
+    <div id="tab-gift" class="scroll tab-panel" style="display:none"></div>
+    <div id="tab-encyclopedia" class="scroll tab-panel" style="display:none"></div>
+    <div id="tab-fortune" class="scroll tab-panel" style="display:none"></div>
+    <nav class="nav" id="bottom-nav"></nav>
+  </div>
+</div>
+<input type="file" accept="image/*" capture="environment" id="file-input" style="display:none">
+<div id="modal-root"></div>
+<script>
+// Global error handler - show errors on screen for mobile debugging
+window.onerror = function(msg, url, line, col, err) {
+  var d = document.getElementById("onboard-content");
+  if (d) d.innerHTML = '<div style="padding:20px;text-align:left;color:#c00;font-size:12px;font-family:monospace;word-break:break-all">' +
+    '<b>JS Error:</b><br>' + msg + '<br><br><b>Line:</b> ' + line + ', Col: ' + col +
+    (err && err.stack ? '<br><br><b>Stack:</b><br>' + err.stack.replace(/\n/g,'<br>') : '') + '</div>';
+  return false;
+};
+window.onunhandledrejection = function(e) {
+  var d = document.getElementById("onboard-content");
+  if (d) d.innerHTML = '<div style="padding:20px;color:#c00;font-size:12px">Promise Error: ' + e.reason + '</div>';
+};
+// ========== API BASE AUTO-DETECT ==========
+// On GitHub Pages: use Cloudflare Worker; on local server: use same-origin
+var WORKER_API = "https://zouhualu-api.lynn-work.workers.dev"; // Will be set after Worker deploy
+var API_BASE = (location.hostname.indexOf("github.io") >= 0 || location.hostname.indexOf("zouhualu") >= 0) ? WORKER_API : "";
+// ========== DATA ==========
+var spiritPlants=[
+{id:"sunflower",emoji:"\uD83C\uDF3B",name:"\u5411\u65E5\u8475",desc:"\u6C38\u8FDC\u8FFD\u968F\u9633\u5149",trait:"\u4E50\u89C2\u6D3E"},
+{id:"rose",emoji:"\uD83C\uDF39",name:"\u73AB\u7470",desc:"\u5916\u67D4\u5185\u521A",trait:"\u6D6A\u6F2B\u5BB6"},
+{id:"clover",emoji:"\uD83C\uDF40",name:"\u5E78\u8FD0\u8349",desc:"\u5C0F\u786E\u5E78\u6536\u96C6\u8005",trait:"\u63A2\u7D22\u8005"},
+{id:"cherry",emoji:"\uD83C\uDF38",name:"\u6A31\u82B1",desc:"\u73CD\u60DC\u5F53\u4E0B",trait:"\u611F\u6027\u6D3E"},
+{id:"cactus",emoji:"\uD83C\uDF35",name:"\u4ED9\u4EBA\u638C",desc:"\u575A\u97E7\u72EC\u7ACB",trait:"\u72EC\u884C\u4FA0"},
+{id:"lavender",emoji:"\uD83D\uDC9C",name:"\u85B0\u8863\u8349",desc:"\u81EA\u5E26\u6CBB\u6108\u529B",trait:"\u6CBB\u6108\u5E08"}
+];
+
+var flowerDB=[
+{name:"\u5411\u65E5\u8475",emoji:"\uD83C\uDF3B",latin:"Helianthus annuus",lang:"\u6C89\u9ED8\u7684\u7231",desc:"\u539F\u4EA7\u5317\u7F8E\u6D32\uFF0C\u82B1\u5E8F\u53EF\u8FBE30cm\u3002\u5E7C\u65F6\u82B1\u76D8\u968F\u592A\u9633\u8F6C\u52A8\u3002",season:"6-9\u6708",water:"\u4E2D\u7B49",light:"\u5168\u65E5\u7167",fact:"\u4E16\u754C\u6700\u9AD8\u5411\u65E5\u8475\u7EA67.3\u7C73"},
+{name:"\u73AB\u7470",emoji:"\uD83C\uDF39",latin:"Rosa",lang:"\u7231\u60C5\u3001\u7F8E\u4E3D",desc:"\u5168\u7403\u4E09\u4E07\u591A\u54C1\u79CD\u3002\u7EA63000\u516C\u65A4\u82B1\u74E3\u63D0\u70BC1\u516C\u65A4\u7CBE\u6CB9\u3002",season:"5-11\u6708",water:"\u4E2D\u7B49",light:"\u534A\u65E5\u7167+",fact:"\u6700\u53E4\u8001\u73AB\u7470\u5316\u77F3\u67093500\u4E07\u5E74"},
+{name:"\u85B0\u8863\u8349",emoji:"\uD83D\uDC9C",latin:"Lavandula",lang:"\u7B49\u5F85\u7231\u60C5\u3001\u5B81\u9759",desc:"\u5507\u5F62\u79D1\u704C\u6728\uFF0C\u539F\u4EA7\u6CD5\u56FD\u5357\u90E8\u3002\u5E72\u82B1\u4FDD\u5B58\u6570\u5E74\u9999\u6C14\u4E0D\u51CF\u3002",season:"6-8\u6708",water:"\u8F83\u5C11",light:"\u5168\u65E5\u7167",fact:"\u53E4\u7F57\u9A6C\u4EBA\u7528\u5B83\u6CE1\u6FA1"},
+{name:"\u7EE3\u7403\u82B1",emoji:"\uD83D\uDC99",latin:"Hydrangea",lang:"\u5E0C\u671B\u3001\u56E2\u5706",desc:"\u82B1\u8272\u968F\u571F\u58E4\u9178\u78B1\u53D8\u5316\u2014\u2014\u9178\u6027\u504F\u84DD\uFF0C\u78B1\u6027\u504F\u7C89\u3002",season:"6-9\u6708",water:"\u8F83\u591A",light:"\u534A\u9634",fact:"\u4E00\u6735\u82B1\u7531\u4E0A\u767E\u6735\u4E0D\u5B55\u82B1\u7EC4\u6210"},
+{name:"\u767E\u5408",emoji:"\uD83E\uDD0D",latin:"Lilium",lang:"\u7EAF\u6D01\u3001\u767E\u5E74\u597D\u5408",desc:"\u767E\u5408\u79D1\uFF0C\u5168\u7403\u7EA6120\u4E2A\u539F\u751F\u79CD\uFF0C\u4E2D\u56FD\u662F\u91CD\u8981\u539F\u4EA7\u5730\u3002",season:"5-7\u6708",water:"\u9002\u4E2D",light:"\u534A\u65E5\u7167",fact:"\u767E\u5408\u9CDE\u830E\u53EF\u6DA6\u80BA\u6B62\u54B3"},
+{name:"\u90C1\u91D1\u9999",emoji:"\uD83C\uDF37",latin:"Tulipa",lang:"\u535A\u7231\u3001\u4F53\u8D34",desc:"17\u4E16\u7EAA\u8377\u5170\u90C1\u91D1\u9999\u72C2\u70ED\uFF0C\u4E00\u9897\u7403\u830E\u4EF7\u6BD4\u4E00\u680B\u8C6A\u5B85\u3002",season:"3-5\u6708",water:"\u8F83\u5C11",light:"\u5168\u65E5\u7167",fact:"\u90C1\u91D1\u9999\u82B1\u74E3\u53EF\u98DF\u7528"},
+{name:"\u8309\u8389",emoji:"\uD83E\uDD0D",latin:"Jasminum",lang:"\u5FE0\u8D1E\u3001\u5C0A\u656C",desc:"\u6728\u7280\u79D1\uFF0C\u591C\u95F4\u5F00\u653E\u65F6\u9999\u6C14\u6700\u6D53\u3002",season:"5-10\u6708",water:"\u8F83\u591A",light:"\u5168\u65E5\u7167",fact:"8000\u6735\u8309\u8389\u7A80\u5236\u4E00\u65A4\u82B1\u8336"},
+{name:"\u6EE1\u5929\u661F",emoji:"\u2728",latin:"Gypsophila",lang:"\u6E05\u7EAF\u3001\u5173\u6000",desc:"\u77F3\u7AF9\u79D1\uFF0C\u9C9C\u5207\u82B1\u5E72\u71E5\u540E\u53EF\u957F\u671F\u4FDD\u5B58\u3002",season:"5-9\u6708",water:"\u8F83\u5C11",light:"\u5168\u65E5\u7167",fact:"\u5168\u7403\u4F7F\u7528\u91CF\u524D\u4E94\u7684\u5207\u82B1"},
+{name:"\u6800\u5B50\u82B1",emoji:"\uD83C\uDF3C",latin:"Gardenia",lang:"\u6C38\u6052\u7684\u7231",desc:"\u679C\u5B9E\u53EF\u63D0\u53D6\u5929\u7136\u9EC4\u8272\u7D20\u3002\u9999\u6C14\u662F\u9AD8\u7EA7\u9999\u6C34\u539F\u6599\u3002",season:"5-7\u6708",water:"\u8F83\u591A",light:"\u6563\u5C04\u5149",fact:"\u6800\u5B50\u679C\u662F\u53E4\u4EE3\u67D3\u8272\u539F\u6599"},
+{name:"\u828D\u836F",emoji:"\uD83E\uDE77",latin:"Paeonia",lang:"\u60C5\u6709\u6240\u949F",desc:"\u4E2D\u56FD\u5341\u5927\u4F20\u7EDF\u540D\u82B1\u3002\u6839\u5165\u836F\u79F0\u767D\u828D\u3002",season:"5-6\u6708",water:"\u9002\u4E2D",light:"\u5168\u65E5\u7167",fact:"\u5DF2\u67093000\u5E74\u683D\u57F9\u53F2"},
+{name:"\u7EFF\u841D",emoji:"\uD83C\uDF3F",latin:"Epipremnum",lang:"\u5B88\u671B\u5E78\u798F",desc:"\u5929\u5357\u661F\u79D1\uFF0C\u6700\u53D7\u6B22\u8FCE\u7684\u5BA4\u5185\u51C0\u5316\u690D\u7269\u3002",season:"\u5168\u5E74",water:"7-10\u5929",light:"\u6563\u5C04\u5149",fact:"NASA\u7814\u7A76\u8868\u660E\u53EF\u5438\u6536\u7532\u919B"},
+{name:"\u9F9F\u80CC\u7AF9",emoji:"\uD83C\uDF31",latin:"Monstera",lang:"\u5065\u5EB7\u957F\u5BFF",desc:"\u53F6\u7247\u5B54\u6D1E\u662F\u81EA\u7136\u6392\u6C34\u5B54\u3002",season:"\u5168\u5E74",water:"5-7\u5929",light:"\u6563\u5C04\u5149",fact:"\u679C\u5B9E\u5473\u9053\u50CF\u83E0\u841D+\u9999\u8549"},
+{name:"\u591A\u8089",emoji:"\uD83E\uDEB4",latin:"Succulent",lang:"\u575A\u97E7\u53EF\u7231",desc:"\u53F6\u7247\u50A8\u6C34\uFF0C\u7F3A\u6C34\u65F6\u53F6\u7247\u53D8\u8F6F\u3002",season:"\u5168\u5E74",water:"10-15\u5929",light:"\u5168\u65E5\u7167",fact:"\u6700\u53E4\u8001\u591A\u8089\u5316\u77F32.5\u4EBF\u5E74"},
+{name:"\u8584\u8377",emoji:"\uD83C\uDF31",latin:"Mentha",lang:"\u7F8E\u5FB7\u6E05\u65B0",desc:"\u542B\u8584\u8377\u9187\uFF0C\u6E05\u51C9\u63D0\u795E\u3002\u751F\u957F\u6781\u65FA\u3002",season:"4-10\u6708",water:"2-3\u5929",light:"\u534A\u65E5\u7167+",fact:"\u8D8A\u6390\u8D8A\u65FA\uFF01"},
+{name:"\u8774\u8776\u5170",emoji:"\uD83C\uDF38",latin:"Phalaenopsis",lang:"\u5E78\u798F\u5411\u4F60\u98DE\u6765",desc:"\u9644\u751F\u578B\u5170\u82B1\uFF0C\u82B1\u5E8F\u53EF\u957F\u8FBE\u6570\u6708\u3002",season:"\u51AC\u6625",water:"7-10\u5929",light:"\u6563\u5C04\u5149",fact:"\u5168\u7403\u5170\u82B1\u8D8528000\u79CD"},
+{name:"\u8377\u82B1",emoji:"\uD83E\uDEB7",latin:"Nelumbo",lang:"\u6E05\u767D\u575A\u8D1E",desc:"\u51FA\u6DE4\u6CE5\u800C\u4E0D\u67D3\u3002\u53F6\u7247\u6709\u8D85\u758F\u6C34\u6548\u5E94\u3002",season:"6-9\u6708",water:"\u6C34\u57F9",light:"\u5168\u65E5\u7167",fact:"\u5343\u5E74\u53E4\u83B2\u5B50\u4ECD\u80FD\u53D1\u82BD"},
+{name:"\u6842\u82B1",emoji:"\uD83C\uDF3C",latin:"Osmanthus",lang:"\u5409\u7965\u7F8E\u597D",desc:"\u9999\u6C14\u6E05\u751C\uFF0C\u53EF\u505A\u6842\u82B1\u871C\u3001\u6842\u82B1\u7CD5\u3002",season:"9-10\u6708",water:"\u9002\u4E2D",light:"\u5168\u65E5\u7167",fact:"\u9999\u6C14\u6709120\u591A\u79CD\u82B3\u9999\u5316\u5408\u7269"},
+{name:"\u6885\u82B1",emoji:"\uD83C\uDF38",latin:"Prunus mume",lang:"\u575A\u5F3A\u9AD8\u6D01",desc:"\u5341\u5927\u540D\u82B1\u4E4B\u9996\uFF0C\u96F6\u4E0B15\u5EA6\u5F00\u82B1\u3002",season:"12-3\u6708",water:"\u8F83\u5C11",light:"\u5168\u65E5\u7167",fact:"\u6700\u53E4\u8001\u6885\u6885\u68511600\u5C81"},
+{name:"\u83CA\u82B1",emoji:"\uD83C\uDF3B",latin:"Chrysanthemum",lang:"\u6E05\u51C0\u957F\u5BFF",desc:"\u54C1\u79CD\u8D85\u4E09\u4E07\u4E2A\uFF0C\u53EF\u5165\u836F\u6CE1\u8336\u98DF\u7528\u3002",season:"9-11\u6708",water:"\u9002\u4E2D",light:"\u5168\u65E5\u7167",fact:"\u83CA\u82B1\u8336\u7528\u4E13\u95E8\u836F\u7528\u54C1\u79CD"},
+{name:"\u6708\u5B63",emoji:"\uD83C\uDF39",latin:"Rosa chinensis",lang:"\u6301\u4E4B\u4EE5\u6052",desc:"\u82B1\u4E2D\u7687\u540E\uFF0C\u56DB\u5B63\u5F00\u82B1\u3002",season:"4-11\u6708",water:"\u9002\u4E2D",light:"\u5168\u65E5\u7167",fact:"\u5317\u4EAC\u5E02\u82B1\u5C31\u662F\u6708\u5B63"}
+];
+
+var giftScenes=[
+{id:"birthday",name:"\u751F\u65E5\u795D\u798F",emoji:"\uD83C\uDF82"},
+{id:"love",name:"\u8868\u767D\u5FC3\u610F",emoji:"\uD83D\uDC95"},
+{id:"thanks",name:"\u611F\u6069\u7B54\u8C22",emoji:"\uD83D\uDE4F"},
+{id:"wedding",name:"\u5A5A\u793C\u5E86\u5178",emoji:"\uD83D\uDC8D"},
+{id:"cheer",name:"\u52A0\u6CB9\u6253\u6C14",emoji:"\uD83D\uDCAA"},
+{id:"daily",name:"\u65E5\u5E38\u6D6A\u6F2B",emoji:"\uD83C\uDF3F"}
+];
+
+var giftFlowers=[
+{n:"玫瑰",e:"🌹",c:"#E8445A",w:6,t:"s",sc:["love","wedding","birthday"],rc:["partner"],g:"f"},
+{n:"粉玫瑰",e:"🌸",c:"#F5A0B8",w:7,t:"s",sc:["love","birthday","thanks","daily"],rc:["partner","friend","mother"],g:"f"},
+{n:"白玫瑰",e:"🤍",c:"#F0EDE8",w:6,t:"s",sc:["love","wedding","daily"],rc:["partner","friend"],g:"a"},
+{n:"向日葵",e:"🌻",c:"#F5C542",w:8,t:"s",sc:["birthday","cheer","thanks","daily"],rc:["elder","father","friend","child"],g:"a"},
+{n:"康乃馨",e:"🌺",c:"#F07088",w:4,t:"e",sc:["thanks","birthday"],rc:["elder","mother"],g:"f"},
+{n:"百合",e:"🤍",c:"#F5F0E8",w:12,t:"p",sc:["wedding","thanks","birthday"],rc:["elder","mother","partner"],g:"a"},
+{n:"郁金香",e:"🌷",c:"#E86088",w:7,t:"s",sc:["love","birthday","daily"],rc:["partner","friend","mother"],g:"f"},
+{n:"芍药",e:"🩷",c:"#F0A0C0",w:15,t:"p",sc:["love","wedding","birthday"],rc:["partner","mother","friend"],g:"f"},
+{n:"绣球",e:"💙",c:"#6898D8",w:18,t:"p",sc:["wedding","thanks","daily"],rc:["partner","friend","mother"],g:"a"},
+{n:"满天星",e:"✨",c:"#E8E0F0",w:3,t:"e",sc:["love","birthday","daily","cheer"],rc:["partner","friend","child"],g:"f"},
+{n:"洋桔梗",e:"💜",c:"#9870B8",w:8,t:"s",sc:["love","wedding","thanks"],rc:["partner","friend"],g:"a"},
+{n:"雏菊",e:"🌼",c:"#F5E060",w:4,t:"e",sc:["daily","cheer","birthday"],rc:["friend","child"],g:"a"},
+{n:"蝴蝶兰",e:"🦋",c:"#A868C0",w:35,t:"l",sc:["wedding","thanks"],rc:["elder","partner"],g:"a"},
+{n:"栀子花",e:"🤍",c:"#F0F0E8",w:6,t:"s",sc:["love","daily","thanks"],rc:["partner","mother","friend"],g:"f"},
+{n:"勿忘我",e:"💜",c:"#8080D0",w:4,t:"e",sc:["love","daily","cheer"],rc:["partner","friend"],g:"a"},
+{n:"非洲菊",e:"🧡",c:"#F5A030",w:5,t:"e",sc:["birthday","cheer","daily"],rc:["friend","child","elder"],g:"a"},
+{n:"桔梗",e:"💚",c:"#60A878",w:5,t:"e",sc:["love","daily","thanks"],rc:["partner","friend"],g:"a"},
+{n:"尤加利",e:"🌿",c:"#78A888",w:2,t:"e",sc:["daily","wedding","thanks"],rc:["friend","partner"],g:"a"},
+{n:"绿绣球",e:"💚",c:"#43A047",w:20,t:"p",sc:["wedding","thanks","daily","love"],rc:["partner","friend","mother","father","elder"],g:"a"},
+{n:"绿康乃馨",e:"🌸",c:"#66BB6A",w:5,t:"e",sc:["thanks","birthday","daily","cheer"],rc:["mother","elder","father","friend"],g:"a"},
+{n:"绿玫瑰",e:"🌿",c:"#4CAF50",w:8,t:"s",sc:["love","daily","wedding","thanks"],rc:["partner","friend","mother"],g:"a"}
+];
+
+var giftColorPresets=[
+{n:"紫色",h:"#9B59B6"},{n:"粉色",h:"#E91E8C"},{n:"红色",h:"#E74C3C"},{n:"蓝色",h:"#3498DB"},
+{n:"白色",h:"#ECF0F1"},{n:"绿色",h:"#27AE60"},{n:"彩色",h:"rainbow"},{n:"黄色",h:"#F1C40F"}
+];
+
+var giftImgNames={
+"pink_01.jpg":["花间词","春山烟雨","胭脂染"],
+"pink_02.jpg":["粉黛心事","半亩花田","晚风知意"],
+"pink_03.jpg":["倾城一顾","胭脂序","花见倾城"],
+"blue_01.jpg":["蓝调独白","鸢尾手札","紫藤信笺"],
+"blue_02.jpg":["雾色温柔","紫韵流光","暮色花语"],
+"blue_03.jpg":["莫奈花园","蓝调华尔兹","雾中风景"],
+"white_01.jpg":["白露为霜","素年锦时","月色如水"],
+"white_02.jpg":["白纱轻语","月光序曲","云间漫步"],
+"white_03.jpg":["清泉石上","留白","初见如故"],
+"yellow_01.jpg":["追光者","向日葵诗","光的方向"],
+"yellow_02.jpg":["金色年华","麦浪如歌","琥珀光年"],
+"yellow_03.jpg":["暖阳如初","日光倾城","橘子汽水"],
+"mixed_01.jpg":["花间漫步","春日来信","繁花小径"],
+"mixed_02.jpg":["万花筒","夏日烟火","彩虹碎片"],
+"mixed_03.jpg":["印象派","花田手记","斑斓时光"],
+"champ_01.jpg":["暖阳手记","香槟玫瑰","日光情书"],
+"champ_02.jpg":["热带来信","落日余晖","琥珀时光"],
+"green_01.jpg":["绿意私语","雨后薄荷","青瓷"],
+"green_02.jpg":["翠影清芬","清风徐来","碧叶无声"],
+"green_03.jpg":["清雅如初","白露微凉","草木间"]
+};
+
+var giftBlessings={
+partner:{
+love:["遇见你之前，人间不过是一场路过；遇见你之后，每一朵花都有了名字。","世间三千繁华，不及你回眸一笑。这束花，是我对你说不完的情书。","我曾以为浪漫是远方的风景，后来发现，浪漫是你。","你就像{花束}，每次见面都让我心动不已。","想把全世界的花都搬到你面前，后来发现，你就是我眼中最美的花。","有些人用文字表白，我用花。这束花里藏着我一整个夏天的喜欢。","和你在一起，连路边的野花都格外好看。","我攒了好久的心动，都装在这束{花束}里了。"],
+birthday:["岁岁年年，你是人间值得。生日快乐，我最好的花。","又一年花开，庆幸身边依然是你。年年有今日，岁岁有今朝。","时光不老，你恰好是我见过最好看的花。生日快乐。","生日快乐。谢谢你让我的人生多了这么多值得庆祝的日子。","你是上天送给我最好的礼物，比任何花都珍贵。新的一岁，继续一起看花开花落。","又长大了一岁，但在我眼里你永远是最初让我心动的那个人。"],
+wedding:["从今往后，你是我花园里唯一的玫瑰，余生请多指教。","执子之手，与子偕老。今日花开正好，恰如我们的开始。","这一生最美的决定，是在花开的季节遇见你。","往后余生，每一个花开的季节都想和你一起度过。","从今以后，我的花只送你一个人。","你是我选择的花，也是花选择的人。余生请多指教。","婚礼的花再美，也美不过你走向我的那一刻。"],
+daily:["没什么特别的日子，就是想送你一束花。你是平凡生活里最温柔的光。","路过花店想起你，于是花就有了归处。","想你的时候，连空气都变成了花的味道。","日子很平淡，但因为有你，每一天都值得送一束花。","不需要理由，你就是我送花的全部理由。","今天阳光很好，花也很好，就缺一个你。","下班路上看到这束{花束}，觉得它写了你的名字。"],
+cheer:["你是我见过最耀眼的人。无论晴雨，这束花替我为你加油。","低谷只是暂时的，你比任何花都开得灿烂。我相信你。","累了就看看花，花里有我全部的加油和心疼。","你的坚强比这束花还美。但偶尔脆弱也没关系，我在。","送你一束花，告诉你：再难的坎儿，我陪你一起过。"],
+thanks:["谢谢你，让我的人生多了一种叫做'幸福'的可能。","有些感谢说不出口，就用这束花替我说吧。","谢谢你愿意让我成为你生命里的那束光。","有你在身边的每一天，都是值得感恩的日子。这束花是我小小的心意。","说不出口的那些谢谢，都藏在花瓣里了。"]
+},
+mother:{
+birthday:["妈妈，您是我生命里第一朵永不凋零的花。生日快乐，永远爱您。","时光请慢一点，让我把最好的花都送给最美的您。","小时候您是我的全世界，长大后您依然是我最温暖的归处。","妈妈生日快乐，愿您的每一天都像这束花一样灿烂绽放。","您养我长大，我陪您变老。这束花是我最笨拙的告白。","小时候您省下买花的钱给我买糖，现在换我送花给您了。","全世界最美的花，都应该开在妈妈的窗台上。"],
+thanks:["您把最好的年华都给了花一样的我。这束花，不及您万分之一的温柔。","世间最奢侈的事，是叫一声'妈'有人应。谢谢您，我永远的港湾。","您是我认识的第一朵花，也是开得最久的那一朵。","小时候不懂您的辛苦，长大了才知您的不容易。妈妈，谢谢您。","每一道皱纹都是一段为我操心的日子。这束花，替我抚平一点点。","世上只有妈妈好，这句话我越长大越懂。谢谢您做我的妈妈。","您总说不用给我买花，但我知道您也喜欢。这束{花束}是女儿的心意。"],
+love:["妈妈，您教会了我什么是爱，所以我知道如何被爱。谢谢您。","妈妈，你是我人生中第一个也是最重要的女性朋友。我爱你。","您的爱是我走过任何风雨时最温暖的底气。"],
+daily:["想把世间所有的美好，都变成花送给您。妈妈，我爱您。","妈妈，今天没什么事，就是想送您一束花。您值得。","不需要节日，您就是我每天送花的理由。"],
+wedding:["妈妈，女儿今天出嫁了。您种下的花，终于开出了最美的样子。","妈妈别哭，您养大的花去了另一个花园，但根永远在您这里。"],
+cheer:["妈妈，您辛苦了。偶尔也为自己开一朵花吧。","妈妈不只是妈妈，也是值得被宠爱的女孩子。这束花送给您自己。"]
+},
+father:{
+birthday:["爸爸，您是我心中最沉默也最深沉的花。生日快乐，永远健康。","您的肩膀是我看世界的第一个高度。这束花，是我最笨拙的感谢。","老爸生日快乐！虽然您总说不用花钱，但这束花是我满满的心意。","小时候骑在您肩上摘花，长大后换我为您送花。爸爸生日快乐。","爸，您从来不说爱，但您做的每件事都是爱的样子。生日快乐。","小时候觉得您是超人，长大了才知道超人也会累。老爸，请一直健康。","您嘴上说着'浪费钱'，但我知道您在偷偷高兴。生日快乐，老爸。"],
+thanks:["您从不把爱挂在嘴边，却把它种在了我生命里的每个角落。","沉默如山的父爱，是我一辈子读不完的诗。谢谢您，爸爸。","小时候您是我的英雄，长大后才知道英雄也会老。请一直健康。","爸，谢谢您默默扛起了这个家。这束花，是我说不出口的心疼。","您不说爱但做的每件事都是爱。谢谢老爸，您辛苦了。","以前总嫌您话少、不够温柔，现在才明白沉默也是一种深情。谢谢您，爸。","您是我见过的最好的男人，虽然您从来不承认。谢谢老爸。","小时候的学费、长大后的嫁妆，您从来不犹豫。这束花，是女儿迟到的感谢。"],
+love:["爸爸，谢谢您教会我什么是责任和担当。","爸，您是我生命中第一个让我懂得'深沉'这个词的人。","父爱如山，不善表达却稳如磐石。爸爸，我爱您。"],
+daily:["不需要理由，就是想给老爸送一束花。","爸，今天没什么特别的事，就是想让您高兴一下。","路过花店想起您，虽然您可能觉得'浪费'，但还是想送。","给老爸买花这件事，您嘴上说不要但眼睛会笑的。"],
+wedding:["爸爸，谢谢您把我养大。今天的花，是女儿最深的敬意。","爸，您牵着我的手走过了整个童年。今天换我送您一束花。","爸爸，虽然我有了新家，但您永远是我最重要的人。"],
+cheer:["老爸加油！您永远是我见过最厉害的人。","爸，您辛苦了。偶尔也放松一下，让花替我陪陪您。","您扛了这么多，偶尔也让自己开心一下。这束花给最棒的老爸。"]
+},
+friend:{
+birthday:["生日快乐！认识你是我花路生涯里最幸运的事。新的一岁，继续一起走花路吧。","又是一年花开时，还好身边有你。友谊万岁。","你值得世界上所有好看的花。生日快乐，我最闪亮的朋友。","生日快乐！又老了一岁但没关系，你的灵魂永远十八。","认识你这么多年，每年送你花是我最大的乐趣之一。","生日快乐！我们的友谊比任何花都经得起时间考验。","新的一岁，愿你想要的都拥有，得不到的都释怀。"],
+cheer:["嘿，送你一束花加满元气！你可是打不死的小强，我永远挺你。","风雨总会过去的。这束花提前告诉你：好日子在后头呢。","就算全世界都下雨，我也给你撑伞。加油，没什么过不去的。","送你一束花和一个拥抱（花先到，拥抱随后）。加油！","你比你以为的更强大。这束花是我对你的信心。","别丧了！看看这束花，多像你——永远向阳而生。"],
+daily:["看到好看的花就想送你，这就是好朋友的本能反应。","平凡日子也需要一点仪式感。喏，花给你，快乐拿走。","有些花就是为某些人开的，比如这束为你开的。","路过花店，觉得这束{花束}写了你的名字，就买了。","好朋友就是看到美好的东西会第一时间想到对方。","今天的快乐是花和你给的。","不需要理由，好朋友就是要随时互送花。"],
+thanks:["谢谢你陪我走过那些不好看花的季节。有你真好。","朋友有很多种，你是自带花香的那一种。谢谢你在。","最好的友谊，是你不说话我也知道你在。谢谢你。","谢谢你做我的树洞、我的后援会、我的紧急联系人。","你帮我做过的事，我都记着。这束花只是千分之一的感谢。","有你在的那些日子，连阴天都是暖的。谢谢你一直在我身边。"],
+love:["你是我最重要的朋友，也是我最想送花的人。","友谊是另一种形式的爱情。你是我生命里最美的存在。"],
+wedding:["恭喜你找到了另一半花！愿你们的花园永远绚烂。","从单身狗到结婚狂，我见证了你的全过程。祝你们幸福到老。","你终于有人要了（开玩笑），真心替你高兴。百年好合！"]
+},
+child:{
+birthday:["宝贝，你比任何花都好看。生日快乐，永远灿烂如阳光。","愿你像花一样，向阳而生，不惧风雨。生日快乐，我的小太阳。","每朵花都有自己的花期，而你一定是开得最灿烂的那一朵。","宝贝生日快乐！你是我们花园里最珍贵的那朵花。","又长大了一岁，像小花苗又往上窜了一截。继续快乐成长吧！","生日快乐！愿你的世界永远充满好奇和欢笑。"],
+cheer:["你是最勇敢的小花！送你一束花当奖励，继续闪闪发光吧。","就算遇到困难也不要怕，花仙子会保护你的！加油！","你的笑容比花还好看。继续加油，世界因你而美丽。","宝贝加油！你比你以为的要厉害一百倍。","跌倒了没关系，爬起来拍拍灰，花仙子给你加满能量！","你做得已经很棒了！这束花是给你的小小奖励。"],
+daily:["宝贝，送你一束花，希望你每天都像花开一样开心。","今天的花和你的笑容一样甜。","每天送你一朵小花，集齐一整个春天的快乐。"],
+thanks:["谢谢你来到我的生命里，你是我最美的花。","谢谢你选择我做你的大人。这是我最幸运的事。","有你在的每一天，家里都像开满了花。"],
+love:["你是世界上独一无二的花，永远爱你。","你是我们用心浇灌的小花，我们永远爱你。","不管长多大、走多远，你永远是我们最珍爱的花。"],
+wedding:["宝贝长大了，愿你找到属于自己的那片花海。","看着你从小花苞开成了最美的花。祝你永远幸福。"]
+},
+elder:{
+birthday:["福寿绵长，花开富贵。愿这束花带去我最深的祝福。","岁月如花，您是最从容的那一朵。祝您健康长寿。","年年有今日，岁岁有今朝。愿您的生活如这束花般缤纷。","祝您生日快乐，身体硬朗，天天开心。这束花带去晚辈满满的祝福。","松柏长青，花开不败。祝您福如东海、寿比南山。","岁月从不败美人。祝您生日快乐，永远优雅从容。"],
+thanks:["您的教诲如春风拂面，润物无声。这束花，是我最深的敬意。","感谢您多年的栽培与关怀，您的恩情我铭记在心。","长辈的智慧如同花园里最深沉的芬芳，受用一生。","谢谢您的关心和帮助，晚辈铭记于心。这束花聊表心意。","您的关照如春风化雨，润物无声。谢谢您。","吃过的盐比我们走过的路多，您的建议总能点醒我。谢谢长辈。"],
+wedding:["百年好合，白头偕老。愿您们的爱情如老花酒，越陈越香。","金婚银婚不如天天都是蜜月。祝长辈们永远恩爱。"],
+daily:["愿这束花为您带来一天的好心情。","今天天气好，送您一束花，祝您笑口常开。","不需要特别的日子，就是想给长辈送束花。"],
+love:["您和伴侣的感情，是我们最好的榜样。","相濡以沫几十年的感情，是我们年轻人最好的教科书。"],
+cheer:["您永远是我们心中的定海神针，加油！","您是我们家的大树，请一直健康挺拔。"]
+},
+other:{
+love:["送你一束花，千言万语都在花里了。","这束花替你说了我不敢说的话。","有些心意，花比语言更诚实。","花替我表达了那些藏在心里的话。","不知道送什么好，但花永远不会错。"],
+birthday:["生日快乐！愿你的每一天都像花儿一样绽放。","生日快乐！新的一岁，万事胜意。","祝你生日快乐，年年有今日，岁岁有今朝。","新的一岁，像花一样绽放自己的精彩。"],
+thanks:["谢谢，这两个字太轻，所以加了一束花。","承蒙关照，这束花是我小小的心意。","感谢您的帮助，无以为报，先送束花表心意。","谢谢你的善意，让世界多了一份温暖。"],
+wedding:["花开正好，新人正好，祝福正好。","百年好合，永结同心。","新婚快乐，愿你们如这束花般绚烂美好。","祝新人百年好合，花开并蒂。"],
+cheer:["加油！送你一束花，愿它替我为你打气。","一切都会好起来的。这束花是我对你的祝福和信心。","你比自己想象的更强大。加油！"],
+daily:["没什么理由，就是想送你一束花。","今天的花格外好看，觉得应该送给你。","日子平淡，送束花加点甜。"]
+},
+generic:{
+love:["这束花，替我说了那些说不出口的话。","花语千万，不及你在我心中的分量。"],
+birthday:["生日快乐！愿这束花为你的新一岁锦上添花。","岁岁年年，花开常在。生日快乐。"],
+thanks:["感谢的话太多，浓缩在这一束花里了。","谢谢，一束花聊表心意。"],
+wedding:["花开并蒂，百年好合。","愿这束花见证你们最美的时刻。"],
+cheer:["送你一束花，愿你带着花香继续前行。","花虽无言，但它替我说了所有的加油。"],
+daily:["生活需要一点仪式感，这束花就是你的小确幸。","花开有时，浪漫无价。","每一束花都是一封手写信，寄给最值得的人。","有些心情，只有花能懂。"]
+}
+};
+
+var GF_STEPS=[
+{k:"who",t:"送给谁"},
+{k:"color",t:"颜色偏好"},
+{k:"flower",t:"花束偏好"}
+];
+var GF_WHO=[{id:"elder",n:"长辈"},{id:"partner",n:"亲密对象"},{id:"mother",n:"妈妈"},{id:"father",n:"爸爸"},{id:"friend",n:"朋友"},{id:"child",n:"孩子"},{id:"other",n:"其他"}];
+var GF_BUDGET=[{id:"b1",n:"100-200元",min:100,max:200},{id:"b2",n:"200-400元",min:200,max:400},{id:"b3",n:"400-600元",min:400,max:600},{id:"b4",n:"600+元",min:600,max:1200},{id:"b5",n:"2000+元",min:2000,max:5000}];
+var GF_FLOWER_OPTS=[{n:"向日葵"},{n:"玫瑰"},{n:"康乃馨"},{n:"百合"},{n:"郁金香"},{n:"芍药"},{n:"绣球"},{n:"满天星"}];
+
+function giftRec(sceneId, form) {
+  var sc = giftFlowers.filter(function(f) { return f.sc.indexOf(sceneId) >= 0; });
+  if (sc.length < 3) sc = giftFlowers.slice();
+  // 颜色硬约束过滤: 用户选了颜色则排除色差过大的花材
+  if (form.color && form.color !== "彩色") {
+    var ci = -1;
+    for (var i = 0; i < giftColorPresets.length; i++) { if (giftColorPresets[i].n === form.color) { ci = i; break; } }
+    if (ci >= 0 && giftColorPresets[ci].h !== "rainbow") {
+      var pc = giftColorPresets[ci].h;
+      var _pr = parseInt(pc.substr(1,2),16), _pg = parseInt(pc.substr(3,2),16), _pb = parseInt(pc.substr(5,2),16);
+      function _cDist(f) {
+        var fc = f.c.toLowerCase();
+        var fr = parseInt(fc.substr(1,2),16), fg = parseInt(fc.substr(3,2),16), fb = parseInt(fc.substr(5,2),16);
+        return Math.sqrt((_pr-fr)*(_pr-fr)+(_pg-fg)*(_pg-fg)+(_pb-fb)*(_pb-fb));
+      }
+      var thresholds = [120, 150, 180];
+      for (var ti = 0; ti < thresholds.length; ti++) {
+        var filtered = sc.filter(function(f) { return _cDist(f) < thresholds[ti]; });
+        if (filtered.length >= 3) { sc = filtered; break; }
+      }
+      // 如果最宽松也凑不够3种,保持原sc(但至少标记:色差>180的排最后)
+    }
+  }
+  var scored = sc.map(function(f) {
+    var s = 10;
+    if (form.who && f.rc.indexOf(form.who) >= 0) s += 20;
+    if (form.color) {
+      var ci = -1;
+      for (var i = 0; i < giftColorPresets.length; i++) { if (giftColorPresets[i].n === form.color) { ci = i; break; } }
+      if (ci >= 0) {
+        var pc = giftColorPresets[ci].h;
+        if (pc === "rainbow") { s += 3; }
+        else {
+          var fc = f.c.toLowerCase();
+          var pr = parseInt(pc.substr(1,2),16), pg = parseInt(pc.substr(3,2),16), pb = parseInt(pc.substr(5,2),16);
+          var fr = parseInt(fc.substr(1,2),16), fg = parseInt(fc.substr(3,2),16), fb = parseInt(fc.substr(5,2),16);
+          var dist = Math.sqrt((pr-fr)*(pr-fr)+(pg-fg)*(pg-fg)+(pb-fb)*(pb-fb));
+          if (dist < 60) s += 15;
+          else if (dist < 120) s += 8;
+        }
+      }
+    }
+    if (form.flowers && form.flowers.length) {
+      for (var j = 0; j < form.flowers.length; j++) {
+        if (f.n.indexOf(form.flowers[j]) >= 0 || form.flowers[j].indexOf(f.n) >= 0) s += 25;
+      }
+    }
+    s += Math.random() * 6;
+    return {flower: f, score: s};
+  });
+  scored.sort(function(a, b) { return b.score - a.score; });
+  var maxS = scored[0].score;
+  var results = [];
+  for (var k = 0; k < Math.min(3, scored.length); k++) {
+    var startIdx = k * 2;
+    if (startIdx >= scored.length) startIdx = k;
+    var sf = scored.slice(startIdx, startIdx + 3);
+    if (sf.length === 0 || !sf[0]) sf = [scored[Math.min(k, scored.length - 1)]];
+    var main = sf[0].flower;
+    var fNames = sf.map(function(x) { return x.flower.n; });
+    // 花材组成 + 数量 (默认中档花束)
+    var budgetMid = 300;
+    if (form.budget) {
+      for (var bi = 0; bi < GF_BUDGET.length; bi++) {
+        if (GF_BUDGET[bi].id === form.budget) { budgetMid = Math.round((GF_BUDGET[bi].min + GF_BUDGET[bi].max) / 2); break; }
+      }
+    }
+    // 初始配比: 主花多, 辅花少
+    var mainCount, subCount, accentCount;
+    if (budgetMid <= 150) { mainCount = 9; subCount = 3; accentCount = 1; }
+    else if (budgetMid <= 300) { mainCount = 11; subCount = 5; accentCount = 3; }
+    else if (budgetMid <= 500) { mainCount = 15; subCount = 7; accentCount = 5; }
+    else if (budgetMid <= 1000) { mainCount = 19; subCount = 9; accentCount = 7; }
+    else { mainCount = 33; subCount = 15; accentCount = 11; }
+    var stems = [];
+    stems.push({flower: sf[0].flower, count: mainCount});
+    if (sf.length > 1) stems.push({flower: sf[1].flower, count: subCount});
+    if (sf.length > 2) stems.push({flower: sf[2].flower, count: accentCount});
+    // 花材批发成本
+    var materialCost = stems.reduce(function(s, x) { return s + x.flower.w * x.count; }, 0);
+    // 包装费 (按花材档次浮动)
+    var avgW = materialCost / stems.reduce(function(s, x) { return s + x.count; }, 0);
+    var wrapCost = avgW > 12 ? 40 : (avgW > 6 ? 25 : 15);
+    // 设计费 (按花材种类数和档次)
+    var designFee = sf.length >= 3 ? (sf.some(function(x) { return x.flower.t === "p" || x.flower.t === "l"; }) ? 50 : 25) : 10;
+    var baseCost = materialCost + wrapCost + designFee;
+    // 加价倍数 (花店运营2.2倍)
+    var markup = 2.2;
+    var retailPrice = Math.round(baseCost * markup / 10) * 10; // 取整到10元
+    // 预算精准适配: 按比例缩放支数
+    if (form.budget) {
+      for (var bi = 0; bi < GF_BUDGET.length; bi++) {
+        if (GF_BUDGET[bi].id === form.budget) {
+          var bMin = GF_BUDGET[bi].min, bMax = GF_BUDGET[bi].max;
+          if (retailPrice > bMax) {
+            var scale = bMax / retailPrice;
+            for (var si = 0; si < stems.length; si++) {
+              stems[si].count = Math.max(1, Math.round(stems[si].count * scale));
+            }
+            materialCost = stems.reduce(function(s, x) { return s + x.flower.w * x.count; }, 0);
+            retailPrice = Math.round((materialCost + wrapCost + designFee) * markup / 10) * 10;
+            if (retailPrice > bMax) {
+              // 微调: 逐个减少直到在预算内
+              for (var adj = 0; adj < 10; adj++) {
+                var maxIdx = 0;
+                for (var mi = 1; mi < stems.length; mi++) { if (stems[mi].count > stems[maxIdx].count) maxIdx = mi; }
+                if (stems[maxIdx].count > 1) stems[maxIdx].count--;
+                materialCost = stems.reduce(function(s, x) { return s + x.flower.w * x.count; }, 0);
+                retailPrice = Math.round((materialCost + wrapCost + designFee) * markup / 10) * 10;
+                if (retailPrice <= bMax) break;
+              }
+            }
+          }
+          if (retailPrice < bMin) retailPrice = bMin;
+          break;
+        }
+      }
+    }
+    var totalStems = stems.reduce(function(s, x) { return s + x.count; }, 0);
+    var avgS = sf.reduce(function(sum, x) { return sum + x.score; }, 0) / sf.length;
+    var matchPct = Math.min(99, Math.round((avgS / maxS) * 100));
+    var bless = "";
+    var img = pickGiftImg(form, main.n, k);
+    var imgKey = img.replace("img/","");
+    var namePool = giftImgNames[imgKey] || ["花间絮语"];
+    var bName = namePool[Math.floor(Math.random() * namePool.length)];
+    var bPool = (giftBlessings[form.who] && giftBlessings[form.who][sceneId]) ||
+                (giftBlessings[form.who] && (function(){ for(var sk in giftBlessings[form.who]){ if(giftBlessings[form.who][sk] && giftBlessings[form.who][sk].length>=2) return giftBlessings[form.who][sk]; } return null; })()) ||
+                (giftBlessings.generic && giftBlessings.generic[sceneId]) ||
+                giftBlessings.generic.daily ||
+                ["愿这束花为你带来美好"];
+    bless = bPool[Math.floor(Math.random() * bPool.length)];
+    bless = bless.replace(/\{花束\}/g, bName);
+    results.push({
+      name: bName,
+      flowers: fNames,
+      lang: giftFL[main.n] || "美好与祝福",
+      bless: bless,
+      price: retailPrice,
+      stems: totalStems,
+      emoji: main.e,
+      color: main.c,
+      img: img,
+      match: matchPct
+    });
+  }
+  return results;
+}
+
+var giftFL={"玫瑰":"爱情与美丽","粉玫瑰":"初恋与心动","白玫瑰":"纯洁与真挚","向日葵":"沉默的爱与阳光","康乃馨":"母爱与感恩","百合":"纯洁与百年好合","郁金香":"博爱与永恒","芍药":"情有所钟","绣球":"希望与团圆","满天星":"清纯与关怀","洋桔梗":"真诚不变的爱","雏菊":"天真与希望","蝴蝶兰":"幸福向你飞来","栀子花":"永恒的爱","勿忘我":"永恒的记忆","非洲菊":"积极向上","桔梗":"永恒的爱","尤加利":"恩赐与回忆","绿绣球":"希望与忠贞","绿康乃馨":"健康与感恩","绿玫瑰":"纯真与新生","洋甘菊":"温柔与坚韧"};
+
+var giftImgByColor={"红色":["pink_01.jpg","pink_02.jpg","pink_03.jpg"],"粉色":["pink_01.jpg","pink_02.jpg","pink_03.jpg"],"蓝色":["blue_01.jpg","blue_02.jpg","blue_03.jpg"],"紫色":["blue_01.jpg","blue_02.jpg","blue_03.jpg"],"白色":["white_01.jpg","white_02.jpg","white_03.jpg"],"黄色":["yellow_01.jpg","yellow_02.jpg","yellow_03.jpg"],"绿色":["green_01.jpg","green_02.jpg","green_03.jpg"],"彩色":["mixed_01.jpg","mixed_02.jpg","mixed_03.jpg"]};
+var giftImgByFlower={"玫瑰":["pink_01.jpg","pink_02.jpg","pink_03.jpg"],"粉玫瑰":["pink_01.jpg","pink_02.jpg","pink_03.jpg"],"白玫瑰":["white_01.jpg","white_02.jpg","white_03.jpg"],"向日葵":["yellow_01.jpg","yellow_02.jpg","yellow_03.jpg"],"康乃馨":["pink_01.jpg","pink_02.jpg","pink_03.jpg"],"百合":["white_01.jpg","white_02.jpg","white_03.jpg"],"郁金香":["pink_01.jpg","white_02.jpg","blue_01.jpg"],"芍药":["pink_02.jpg","pink_03.jpg","pink_01.jpg"],"绣球":["blue_01.jpg","blue_02.jpg","blue_03.jpg"],"满天星":["white_01.jpg","white_02.jpg","white_03.jpg"],"洋桔梗":["blue_02.jpg","blue_03.jpg","white_01.jpg"],"雏菊":["mixed_01.jpg","yellow_01.jpg","mixed_02.jpg"],"蝴蝶兰":["blue_01.jpg","white_01.jpg","blue_03.jpg"],"栀子花":["white_02.jpg","white_03.jpg","white_01.jpg"],"勿忘我":["blue_02.jpg","blue_03.jpg","blue_01.jpg"],"非洲菊":["mixed_02.jpg","champ_02.jpg","yellow_01.jpg"],"桔梗":["green_01.jpg","blue_02.jpg","blue_03.jpg"],"尤加利":["green_01.jpg","green_02.jpg","white_03.jpg"],"绿绣球":["green_01.jpg","green_02.jpg","green_03.jpg"],"绿康乃馨":["green_02.jpg","green_03.jpg","white_03.jpg"],"绿玫瑰":["green_01.jpg","green_03.jpg","green_02.jpg"],"洋甘菊":["green_02.jpg","green_03.jpg","white_01.jpg"]};
+var giftImgAll=["white_01.jpg","blue_01.jpg","yellow_01.jpg","mixed_01.jpg","champ_01.jpg","green_01.jpg"];
+function pickGiftImg(form, mainFlowerName, idx) {
+  // 颜色偏好严格优先: 选了颜色就必须匹配对应色系图片
+  if (form.color && giftImgByColor[form.color]) {
+    var pool = giftImgByColor[form.color];
+    return "img/" + pool[idx % pool.length];
+  }
+  // 无颜色偏好时按花材匹配
+  if (mainFlowerName && giftImgByFlower[mainFlowerName]) {
+    var pool = giftImgByFlower[mainFlowerName];
+    return "img/" + pool[idx % pool.length];
+  }
+  return "img/" + giftImgAll[idx % giftImgAll.length];
+}
+
+var encData=[
+{
+  n:"绿萝",
+  c:"foliage",
+  d:"入门级",
+  ds:"最受欢迎的室内净化植物,几乎养不死的懒人绿植",
+  img:"/img/plant/lvlu.jpg",
+  fl:"坚韧善良,守望幸福",
+  care:{
+    w:"春秋7天/次,夏季3天/次,冬季15天/次",
+    f:"春秋半月/次,夏冬停肥",
+    pr:"随时剪过长枝条,可扦插繁殖",
+    bl:null,
+    rp:"每年春季换盆或换土",
+    no:"黄叶多因浇水过多;叶尖干枯因空气干燥可喷雾增湿",
+    rg:"全国均可,北方冬季远离暖气片,华南注意通风防闷根"
+  }
+},
+{
+  n:"龟背竹",
+  c:"foliage",
+  d:"入门级",
+  ds:"网红大型观叶植物,叶片开裂极具装饰感",
+  img:"/img/plant/guibeizhu.jpg",
+  fl:"健康长寿,活力充沛",
+  care:{
+    w:"春秋5-7天/次,夏季3天/次,冬季10-15天/次",
+    f:"生长期每月1次稀薄液肥",
+    pr:"剪除老叶黄叶,气根可引导入盆",
+    bl:null,
+    rp:"每1-2年春季换大盆",
+    no:"叶片不开裂因光照不足;叶缘焦枯因强光直射或肥害",
+    rg:"华南可室外养护,华东华北室内为主,西南注意梅雨季控水"
+  }
+},
+{
+  n:"茉莉",
+  c:"flowering",
+  d:"中等",
+  ds:"芳香四溢的经典花卉,花开满屋香",
+  img:"/img/plant/moli.jpg",
+  fl:"忠贞尊敬,质朴迷人",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次,冬季7-10天/次",
+    f:"花期前每周磷钾肥,花后氮肥促枝叶",
+    pr:"花后及时修剪残花及枝条促新枝萌发",
+    bl:"充足光照+磷钾肥促花,每年可开3-4茬",
+    rp:"每年春季换盆修根",
+    no:"喜酸性土,北方用硫酸亚铁调水防黄叶;蕾期忌搬动",
+    rg:"华南最适宜露养,华东春秋可室外,华北冬季必须入室,西南湿度好适合养"
+  }
+},
+{
+  n:"多肉(通用)",
+  c:"succulent",
+  d:"入门级",
+  ds:"品种丰富的懒人植物,小巧可爱适合桌面",
+  img:"/img/plant/duorou.jpg",
+  fl:"坚强顽强,萌萌的爱",
+  care:{
+    w:"春秋7-10天/次,夏季控水15-20天/次,冬季15-30天/次",
+    f:"春秋每月1次多肉专用肥,夏冬停肥",
+    pr:"摘除底部干枯叶片,徒长可砍头重新扦插",
+    bl:null,
+    rp:"每年秋季换盆换土,修根晾根后上盆",
+    no:"徒长因光照不足或浇水过多;化水多因夏季高温高湿",
+    rg:"华北夏季遮阳通风,华南梅雨季严格控水,华东阳台党注意温差,西南冬季防冻"
+  }
+},
+{
+  n:"薄荷",
+  c:"herb",
+  d:"入门级",
+  ds:"可食用香草,清凉提神还能驱蚊",
+  img:"/img/plant/bohe.jpg",
+  fl:"愿与你重逢,有德之人",
+  care:{
+    w:"春秋2-3天/次,夏季每日1-2次,冬季5-7天/次",
+    f:"每月1次稀薄氮肥促叶片生长",
+    pr:"经常掐顶打促分枝,越剪越茂盛",
+    bl:null,
+    rp:"每年春季分株换盆,根系蔓延快需控制",
+    no:"薄荷喜水喜光,缺水叶片立刻萎蔫但浇水后可恢复;建议单独盆栽防入侵",
+    rg:"全国均可,华北冬季地上部分枯萎来年重发,华南全年可养,华东注意夏季排水"
+  }
+},
+{
+  n:"蝴蝶兰",
+  c:"flowering",
+  d:"较难",
+  ds:"花形似蝶的高档年宵花,花期可达2-3个月",
+  img:"/img/plant/hudielan.jpg",
+  fl:"幸福向你飞来,高洁清雅",
+  care:{
+    w:"春秋5-7天/次(水苔干透再浇),夏季3天/次,冬季10天/次",
+    f:"生长期每2周兰花专用肥,花期停肥",
+    pr:"花谢后从第3节上方剪断花梗促二次开花",
+    bl:"秋冬温差(日25°C/夜18°C)催花,磷钾肥促花芽分化",
+    rp:"花后春季换水苔,修剪烂根",
+    no:"忌积水烂根;叶片发皱因缺水或根烂;忌阳光直射灼伤叶片",
+    rg:"华南湿度高最适宜,华东华北需增湿(加湿器),西南冬季控水保温"
+  }
+},
+{
+  n:"栀子花",
+  c:"flowering",
+  d:"较难",
+  ds:"洁白芬芳的经典庭院花卉,花香浓郁",
+  img:"/img/plant/zhizihua.jpg",
+  fl:"永恒的爱与约定,一生的守候",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次,冬季7天/次",
+    f:"生长期每2周硫酸亚铁+磷钾肥交替使用",
+    pr:"花后轻剪整形,去除徒长枝和交叉枝",
+    bl:"春季充足光照+磷钾肥,现蕾后忌移动花盆",
+    rp:"每2年春季换盆,喜酸性腐叶土",
+    no:"典型酸性土植物,北方水土偏碱必须定期硫酸亚铁调酸;黄叶多为缺铁",
+    rg:"华南华东最适,华北土壤偏碱需特殊调理,西南湿度好但注意排水防涝"
+  }
+},
+{
+  n:"迷迭香",
+  c:"herb",
+  d:"中等",
+  ds:"西餐常用香草,提神醒脑还能净化空气",
+  img:"/img/plant/midiexiang.jpg",
+  fl:"回忆与纪念,忠诚友谊",
+  care:{
+    w:"春秋5-7天/次(干透再浇),夏季7天/次,冬季15天/次",
+    f:"春秋每月1次稀薄肥,忌浓肥",
+    pr:"经常修剪促分枝,剪下可晾干保存",
+    bl:null,
+    rp:"每年春季换盆,盆土需疏松透气",
+    no:"忌积水烂根,宁干勿湿;通风不良易白粉病;夏季高温忌淋雨",
+    rg:"华北冬季入室,华南注意梅雨季排水,华东春秋生长旺盛,西南注意通风"
+  }
+},
+{
+  n:"吊兰",
+  c:"foliage",
+  d:"入门级",
+  ds:"净化空气小能手,容易爆盆的垂吊绿植",
+  img:"/img/plant/diaolan.jpg",
+  fl:"朴实无华,楚楚动人,希望与传承",
+  care:{
+    w:"春秋5-7天/次,夏季3天/次,冬季10-15天/次",
+    f:"春秋每月2次稀薄液肥",
+    pr:"剪除枯黄叶片,匍匐茎小苗可剪下扦插",
+    bl:null,
+    rp:"每年春季换盆分株",
+    no:"叶尖干枯因空气干燥或浇水不当;烂根多因盆土积水",
+    rg:"全国均可,华北冬季远离暖气防干尖,华南可室外养护,华东注意夏季遮阳"
+  }
+},
+{
+  n:"虎皮兰",
+  c:"foliage",
+  d:"入门级",
+  ds:"超强耐阴耐旱的懒人绿植,夜间释放氧气",
+  img:"/img/plant/hupilan.jpg",
+  fl:"坚定刚毅,长命富贵",
+  care:{
+    w:"春秋10-15天/次,夏季15天/次,冬季30天/次",
+    f:"春秋每月1次稀薄肥",
+    pr:"几乎不需要修剪,老叶枯黄时从基部剪除",
+    bl:null,
+    rp:"每2-3年春季换盆,盆宁小勿大",
+    no:"极耐旱怕积水,浇水过多是最常见死因;叶片变软发黄多为烂根",
+    rg:"全国均可,极耐粗放管理,华北冬季5°C以上即可安全越冬"
+  }
+},
+{
+  n:"发财树",
+  c:"tree",
+  d:"中等",
+  ds:"寓意吉祥的经典商务绿植,树干粗壮造型优美",
+  img:"/img/plant/facai.jpg",
+  fl:"招财进宝,财源广进",
+  care:{
+    w:"春秋15-20天/次,夏季10天/次,冬季30天/次",
+    f:"春秋每月1次稀薄复合肥",
+    pr:"春季重剪促新芽,保持树形美观",
+    bl:null,
+    rp:"每2-3年春季换盆",
+    no:"树干储水能力强,宁干勿湿;烂根是最常见死因;忌频繁移动位置",
+    rg:"华南可室外,华东春秋适宜,华北冬季必须室内10°C以上,西南注意通风"
+  }
+},
+{
+  n:"仙人掌",
+  c:"succulent",
+  d:"入门级",
+  ds:"超级耐旱的沙漠植物,适合完全放养",
+  img:"/img/plant/xianrenzhang.jpg",
+  fl:"坚强不屈,外刚内柔,孤独中的温暖",
+  care:{
+    w:"春秋15-20天/次,夏季10-15天/次,冬季停水或30天/次",
+    f:"春秋每月1次仙人掌专用肥",
+    pr:"一般不修剪,子球可掰下繁殖",
+    bl:"充足光照+控水+磷钾肥可促花",
+    rp:"每2-3年春季换盆,注意防刺",
+    no:"最怕浇水过多,土壤必须疏松透气;冬季低温必须断水防冻",
+    rg:"全国均可,华北冬季室内阳光充足处,华南注意梅雨季避雨,华东华南温差利开花"
+  }
+},
+{
+  n:"芦荟",
+  c:"succulent",
+  d:"入门级",
+  ds:"兼具观赏与实用的多功能植物,汁液可护肤",
+  img:"/img/plant/luhui.jpg",
+  fl:"自尊自爱,洁身自好,青春永驻",
+  care:{
+    w:"春秋10-15天/次,夏季7-10天/次,冬季20-30天/次",
+    f:"春秋每月1次稀薄肥",
+    pr:"掰取侧芽繁殖,老叶干缩后从基部剥除",
+    bl:null,
+    rp:"每2年春季换盆分株",
+    no:"忌积水;叶片发红因强光(正常);叶片变薄因缺水或养分不足",
+    rg:"华南可室外,华东华北冬季入室,西南注意排水,全国室内窗台均可养"
+  }
+},
+{
+  n:"富贵竹",
+  c:"foliage",
+  d:"入门级",
+  ds:"水培土培均可的吉祥植物,节节高升寓意好",
+  img:"/img/plant/fuguizhu.jpg",
+  fl:"花开富贵,竹报平安,大吉大利",
+  care:{
+    w:"水培每周换水,土培春秋5-7天/次",
+    f:"水培每月加几滴营养液,土培每月1次稀薄肥",
+    pr:"剪除黄叶,茎秆过长可截断重新水插",
+    bl:null,
+    rp:"水培定期清洗容器,土培每年换盆",
+    no:"水培黄叶多因水质不好,加铁钉可补铁;忌阳光直射;根部发臭需换水剪根",
+    rg:"全国均可,华北冬季避免水温过低(用室温水),华南华东养护最省心"
+  }
+},
+{
+  n:"铜钱草",
+  c:"foliage",
+  d:"入门级",
+  ds:"圆叶似铜钱的可爱小草,半水半土最好养",
+  img:"/img/plant/tongqiancao.jpg",
+  fl:"财源滚滚,团团圆圆",
+  care:{
+    w:"半水半土养护,保持水面始终有水,缺水立刻倒伏",
+    f:"每月加少量复合肥或营养液",
+    pr:"叶片过密时疏剪,倒伏后可全部剃头重新萌发",
+    bl:null,
+    rp:"每年春季分盆,繁殖极快",
+    no:"最怕缺水,一旦干透叶片全倒;夏季易爆盆需经常分盆;全日照叶片更大更圆",
+    rg:"全国均可,华北冬季室内防冻,华南可室外水缸养,华东阳台爆盆神器"
+  }
+},
+{
+  n:"文竹",
+  c:"foliage",
+  d:"中等",
+  ds:"文雅飘逸的书房伴侣,姿态如云似雾",
+  img:"/img/plant/wenzhu.jpg",
+  fl:"文雅之竹,象征永恒与友情",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季7-10天/次",
+    f:"春秋每月1次稀薄液肥",
+    pr:"剪除枯黄枝条,攀扎整形控制高度",
+    bl:null,
+    rp:"每2年春季换盆",
+    no:"忌烟尘和油烟;叶黄多因空气干燥或施肥过浓;忌强光直射",
+    rg:"华北冬季室内加湿,华南注意通风,华东梅雨季控水,西南湿度适宜"
+  }
+},
+{
+  n:"月季",
+  c:"flowering",
+  d:"较难",
+  ds:"花中皇后,品种丰富四季可开花",
+  img:"/img/plant/yueji.jpg",
+  fl:"爱情与热情,美丽常新",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次,冬季7天/次",
+    f:"花期每周磷钾肥,花后复合肥促新枝",
+    pr:"冬季重剪(留2-3芽点),花后轻剪,随时去盲枝",
+    bl:"充足光照(6h+) + 冬剪 + 春季磷钾肥促花",
+    rp:"每年冬季落叶后换盆修根",
+    no:"药罐子,需定期喷药防黑斑白粉蚜虫红蜘蛛;喜肥喜光通风",
+    rg:"华北冬季可室外(埋肥防冻),华南夏季高温遮阳,华东梅雨季防病,西南通风防病"
+  }
+},
+{
+  n:"三角梅",
+  c:"flowering",
+  d:"中等",
+  ds:"花色艳丽花期长的南方明星花卉",
+  img:"/img/plant/sanjiaomei.jpg",
+  fl:"热情坚韧,没有真爱是一种悲伤",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季10天/次",
+    f:"生长期半月1次复合肥,花前磷钾肥",
+    pr:"花后修剪整形,控型促花",
+    bl:"控水促花(叶片微蔫再浇)+ 全日照 + 磷钾肥",
+    rp:"每2年春季换盆",
+    no:"控水是开花关键,水多只长叶不开花;不耐寒低于5°C落叶",
+    rg:"华南最佳(可室外全年),华东华北冬季必须入室,西南光照不足影响开花"
+  }
+},
+{
+  n:"长寿花",
+  c:"succulent",
+  d:"入门级",
+  ds:"多肉型花卉,花多色艳寓意长寿",
+  img:"/img/plant/changshouhua.jpg",
+  fl:"大吉大利,长命百岁,福寿吉庆",
+  care:{
+    w:"春秋5-7天/次,夏季10天/次(休眠控水),冬季7天/次",
+    f:"春秋每月1次磷钾肥促花",
+    pr:"花后剪残花,摘心促分枝增加花量",
+    bl:"短日照处理(每天8h光照)催花,秋冬自然短日照即可",
+    rp:"花后春季换盆",
+    no:"度夏是难点,夏季高温休眠必须控水遮阳通风;茎腐多因积水",
+    rg:"华北冬季室内阳光处,华南夏季遮阳通风,华东注意梅雨季,西南冬季保温"
+  }
+},
+{
+  n:"天竺葵",
+  c:"flowering",
+  d:"中等",
+  ds:"阳台花园的开花机器,品种多花色丰富",
+  img:"/img/plant/tianzukui.jpg",
+  fl:"偶然的相遇,幸福就在身边",
+  care:{
+    w:"春秋3-5天/次,夏季控水5-7天/次,冬季7-10天/次",
+    f:"生长期每周1次磷钾肥",
+    pr:"花后摘残花,秋季重剪促新枝",
+    bl:"充足光照 + 磷钾肥 + 凉爽环境(15-20°C最适)",
+    rp:"每年秋季换盆或扦插更新",
+    no:"夏季高温(>30°C)易黑腐,需遮阳通风控水;度夏是最大难点",
+    rg:"华北夏季需遮阴降温,华南夏季最难养(黑腐高发),华东春秋为盛花期,西南凉爽最适宜"
+  }
+},
+{
+  n:"薰衣草",
+  c:"herb",
+  d:"较难",
+  ds:"浪漫芳香的紫色精灵,助眠安神",
+  img:"/img/plant/xunyicao.jpg",
+  fl:"等待爱情,浪漫芬芳",
+  care:{
+    w:"春秋5-7天/次(干透浇透),夏季7天/次,冬季15天/次",
+    f:"春秋每月1次稀薄肥,忌浓肥",
+    pr:"花后剪去花穗,春季轻剪整形",
+    bl:"全日照+磷钾肥促花,开花需充足温差",
+    rp:"每2年春季换盆",
+    no:"最怕高温高湿,夏季是最难熬的时期;忌积水;通风是第一要务",
+    rg:"华北干燥气候较适宜,华南夏季高温高湿极难养,华东梅雨季致命,西南凉爽干燥区可养"
+  }
+},
+{
+  n:"碰碰香",
+  c:"herb",
+  d:"入门级",
+  ds:"触碰散发苹果香气的可爱小草,越碰越香",
+  img:"/img/plant/pengpengxiang.jpg",
+  fl:"吉祥如意,乐观开朗",
+  care:{
+    w:"春秋5-7天/次,夏季3-5天/次,冬季10-15天/次",
+    f:"春秋每月1次稀薄肥",
+    pr:"经常掐顶促分枝,可扦插繁殖",
+    bl:null,
+    rp:"每年春季换盆",
+    no:"忌积水;光照不足会徒长;夏季注意通风",
+    rg:"全国室内均可,华北冬季入室防冻,华南可室外半阴处,华东注意夏季排水"
+  }
+},
+{
+  n:"绣球花",
+  c:"flowering",
+  d:"中等",
+  ds:"花团锦簇的网红庭院花卉,可调色",
+  img:"/img/plant/xiuqiuhua.jpg",
+  fl:"希望与忠贞,美满团聚",
+  care:{
+    w:"春秋2-3天/次,夏季每日1-2次,冬季7天/次",
+    f:"生长期每周1次绣球专用肥",
+    pr:"花后剪残花(老枝品种只剪花头),冬季不剪",
+    bl:"老枝品种前一年秋季已形成花芽,春季促花肥+充足水分",
+    rp:"每2年春季换大盆",
+    no:"酸性土开蓝花,碱性土开粉花(可调色铝离子);夏季最怕缺水萎蔫;新老枝品种修剪不同",
+    rg:"华东最适宜(春化充分),华南花量好,华北冬季需保护老枝防冻,西南湿度好但光照不足影响花色"
+  }
+},
+{
+  n:"杜鹃花",
+  c:"flowering",
+  d:"较难",
+  ds:"中国传统名花,花开时节满山红遍",
+  img:"/img/plant/dujuanhua.jpg",
+  fl:"永远属于你,爱的喜悦",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次(忌午间浇),冬季5-7天/次",
+    f:"生长期每2周杜鹃专用肥(酸性),忌碱性肥",
+    pr:"花后轻剪去残花和弱枝",
+    bl:"秋季充足光照+磷钾肥促花芽分化,冬季低温春化",
+    rp:"每2年春季换盆,必须用酸性土(松针土)",
+    no:"典型酸性土植物,北方水土偏碱必用硫酸亚铁;忌浓肥;忌暴晒",
+    rg:"西南(云贵)原产地最适,华东可室外养护,华北室内酸性土调理,华南夏季遮阳降温"
+  }
+},
+{
+  n:"茶花",
+  c:"flowering",
+  d:"较难",
+  ds:"冬春开花的传统名花,花姿雍容大气",
+  img:"/img/plant/chahua.jpg",
+  fl:"理想的爱,谦让高洁",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季7天/次",
+    f:"春夏生长期每月1次酸性肥,秋季磷钾肥促蕾",
+    pr:"花后轻剪,疏蕾(每枝留1-2蕾)",
+    bl:"秋季磷钾肥+适当控水促花芽分化",
+    rp:"每2-3年春季花后换盆",
+    no:"酸性土植物,北方必须调酸;落蕾多因移动花盆或浇水不当;忌浓肥",
+    rg:"华东最适宜(华东山茶名产区),华南可室外,华北冬季冷室(5-10°C)养护,西南适合"
+  }
+},
+{
+  n:"君子兰",
+  c:"flowering",
+  d:"中等",
+  ds:"端庄典雅的室内名花,叶片整齐如扇",
+  img:"/img/plant/junzilan.jpg",
+  fl:"君子之风,高贵典雅,温文尔雅",
+  care:{
+    w:"春秋5-7天/次,夏季7-10天/次,冬季15天/次",
+    f:"春秋每月1次饼肥水或专用肥",
+    pr:"去除老叶黄叶,分株时保留3-4片叶",
+    bl:"秋冬温差(日20°C/夜10°C)催箭,磷钾肥促花芽分化",
+    rp:"每2-3年春季换盆,烂根需修根消毒",
+    no:"夹箭(花箭抽不出)因温差不够或营养不足;烂根因积水;浇水避免流入叶心",
+    rg:"华北冬季室内散射光处(温差促花),华南夏季遮阳通风,华东注意梅雨季控水,西南适宜"
+  }
+},
+{
+  n:"仙客来",
+  c:"flowering",
+  d:"较难",
+  ds:"冬春经典年宵花,花形独特如兔耳",
+  img:"/img/plant/xiankelai.jpg",
+  fl:"内向含蓄,迎宾好客,仙姿飘逸",
+  care:{
+    w:"春秋2-3天/次(盆底浸水法),夏季休眠断水,冬季3-5天/次",
+    f:"生长期每周1次稀薄磷钾肥",
+    pr:"摘除黄叶和残花,旋转花盆防偏冠",
+    bl:"凉爽环境(15-18°C)+ 充足散射光自然促花",
+    rp:"夏季休眠后秋季换盆重新栽种球茎",
+    no:"夏季休眠是最大难点,需阴凉通风断水;浇水避开球茎顶部防腐烂",
+    rg:"华北冬季室内冷凉处(忌暖气房),华南夏季难休眠,华东秋季最佳,西南凉爽区最适"
+  }
+},
+{
+  n:"风信子",
+  c:"flowering",
+  d:"入门级",
+  ds:"冬春水培球根花卉,花香浓郁一室芬芳",
+  img:"/img/plant/yujinxiang.jpg",
+  fl:"喜悦与爱意,点燃生命之火",
+  care:{
+    w:"水培每周换水,水位距球底1cm;土培保持微润",
+    f:"水培加营养液,土培每月1次磷钾肥",
+    pr:"花谢后剪花梗,叶片保留养球",
+    bl:"秋冬低温(9°C)黑暗处理6-8周催根,后移入温暖处催花",
+    rp:"花后起球保存,秋季重新栽种",
+    no:"球根有毒避免儿童接触;开花后球根营养耗尽难复花(可尝试养球)",
+    rg:"全国均可室内水培,华北冬季窗台冷凉处最佳,华南需冰箱催根处理"
+  }
+},
+{
+  n:"郁金香",
+  c:"flowering",
+  d:"中等",
+  ds:"高贵典雅的球根花卉,花型优雅如酒杯",
+  img:"/img/plant/yujinxiang.jpg",
+  fl:"博爱体贴,高雅富贵,永恒祝福",
+  care:{
+    w:"生长期3-5天/次,休眠期断水",
+    f:"生长期每2周磷钾肥",
+    pr:"花谢后剪花梗保留叶片养球",
+    bl:"必须经过6-8周低温(2-9°C)春化处理才能开花",
+    rp:"秋季栽种新球,旧球复花率低建议每年买新球",
+    no:"球根有毒;国内复花困难多作一次性养护;忌积水烂球",
+    rg:"华北冬季可自然春化,华南华东需冰箱处理,西南高海拔区可自然春化"
+  }
+},
+{
+  n:"百合花",
+  c:"flowering",
+  d:"中等",
+  ds:"百年好合的象征,花香清幽姿态高雅",
+  img:"/img/plant/baihehua.jpg",
+  fl:"百年好合,纯洁高贵,祝福满满",
+  care:{
+    w:"生长期3-5天/次,休眠期控水",
+    f:"生长期每2周磷钾肥促花",
+    pr:"花谢后剪花梗,保留茎叶养球至自然枯萎",
+    bl:"春季种植,夏季自然开花,充足光照+磷钾肥",
+    rp:"秋季分球栽种,每2-3年分盆",
+    no:"花粉染色难洗(摘除花药);球根怕积水;香味浓郁不宜放卧室",
+    rg:"全国均可,华北冬季起球或覆土防冻,华南注意排水,华东最适宜,西南高海拔品种好"
+  }
+},
+{
+  n:"芍药",
+  c:"flowering",
+  d:"较难",
+  ds:"花中宰相,中国传统名花,雍容华贵",
+  img:"/img/plant/fengxinzi.jpg",
+  fl:"情有所钟,依依不舍,美丽端庄",
+  care:{
+    w:"生长期3-5天/次,休眠期控水",
+    f:"春季萌芽肥,花前磷钾肥,秋季基肥",
+    pr:"花后剪残花,秋季分株(芽眼朝上浅栽)",
+    bl:"秋季分株栽种,翌春自然开花,需冬季低温春化",
+    rp:"秋季分株移栽,忌春季移栽(春栽芍药不开花)",
+    no:"必须秋季种植,春季移栽多年不开花;需充足冬季低温;忌积水",
+    rg:"华北最适宜(洛阳菏泽产区),华东可养,华南春化不足花量少,西南高海拔区适宜"
+  }
+},
+{
+  n:"向日葵",
+  c:"flowering",
+  d:"入门级",
+  ds:"追逐阳光的快乐花朵,矮生品种适合阳台",
+  img:"/img/plant/shaoyao.jpg",
+  fl:"沉默的爱,信念坚定,阳光积极",
+  care:{
+    w:"生长期2-3天/次,花期每日1次",
+    f:"生长期每周1次复合肥,花前磷钾肥",
+    pr:"一般不修剪,矮生品种可摘心促分枝",
+    bl:"全日照(8h+)+ 充足肥水自然促花",
+    rp:"一年生植物不需换盆,每季播种新苗",
+    no:"一年生草花,花后可收种下一季;必须有充足光照否则徒长倒伏",
+    rg:"全国均可,华北5月直播,华南可春秋两季,华东4-5月播种,西南注意排水"
+  }
+},
+{
+  n:"康乃馨",
+  c:"flowering",
+  d:"中等",
+  ds:"母亲节之花,温馨感恩的象征",
+  img:"/img/plant/xiangrikui.jpg",
+  fl:"母爱与感恩,热情真情,温馨祝福",
+  care:{
+    w:"春秋3-5天/次,夏季5-7天/次,冬季7-10天/次",
+    f:"生长期每2周磷钾肥",
+    pr:"花后剪残花,摘心促分枝",
+    bl:"凉爽环境(15-20°C)+ 充足光照 + 磷钾肥促花",
+    rp:"每2年春季换盆或扦插更新",
+    no:"怕高温高湿,夏季最难养;忌积水;通风不良易灰霉病",
+    rg:"华北春秋最适,华南夏季极难(高温致死),华东注意梅雨季,西南凉爽最适宜"
+  }
+},
+{
+  n:"满天星",
+  c:"flowering",
+  d:"入门级",
+  ds:"繁星点点的浪漫配角花,干花也很美",
+  img:"/img/plant/mantianxing.jpg",
+  fl:"纯洁的心,思念与浪漫,甘愿做配角",
+  care:{
+    w:"春秋3-5天/次,夏季5-7天/次,冬季7-10天/次",
+    f:"生长期每月2次磷钾肥",
+    pr:"花后重剪促二次开花",
+    bl:"全日照+磷钾肥促花,春播夏花或秋播春花",
+    rp:"多年生可每年春季换盆",
+    no:"喜干燥忌高湿;根部忌积水;适合做干花(倒挂阴干)",
+    rg:"华北干燥最适,华南高湿易烂根,华东注意排水,西南干燥区适宜"
+  }
+},
+{
+  n:"雏菊",
+  c:"flowering",
+  d:"入门级",
+  ds:"清新可爱的小花,冬春点缀阳台的好选择",
+  img:"/img/plant/kangnaixin.jpg",
+  fl:"天真与和平,深藏心底的爱",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次(或遮阳),冬季5-7天/次",
+    f:"生长期每2周稀薄液肥",
+    pr:"摘除残花促持续开花",
+    bl:"凉爽气候自然开花,秋冬播种春花",
+    rp:"一年生或短命多年生,建议每年秋播新苗",
+    no:"怕酷热,夏季高温易枯死;凉爽季节开花最好",
+    rg:"华北秋季播种来年春花,华南作一年生养,华东秋播春花最佳,西南四季可养"
+  }
+},
+{
+  n:"常春藤",
+  c:"vine",
+  d:"入门级",
+  ds:"优雅垂吊藤本植物,净化空气效果好",
+  img:"/img/plant/chuju.jpg",
+  fl:"忠诚友谊,永恒的爱与感化",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季7-10天/次",
+    f:"春秋每月2次稀薄液肥",
+    pr:"修剪过长枝条保持造型,可扦插繁殖",
+    bl:null,
+    rp:"每年春季换盆",
+    no:"忌高温闷热,夏季易红蜘蛛(喷水增湿防治);叶斑病需通风",
+    rg:"全国均可,华北冬季室内防干尖,华南夏季遮阳通风,华东注意梅雨季防病"
+  }
+},
+{
+  n:"琴叶榕",
+  c:"tree",
+  d:"较难",
+  ds:"大型网红观叶植物,叶片宽大如提琴",
+  img:"/img/plant/changchunteng.jpg",
+  fl:"和蔼可亲,吉祥如意",
+  care:{
+    w:"春秋5-7天/次,夏季3-5天/次,冬季10-15天/次",
+    f:"生长期每月1-2次稀薄复合肥",
+    pr:"春季修剪整形,打顶促分枝",
+    bl:null,
+    rp:"每2-3年春季换大盆",
+    no:"最忌移动位置(易落叶);忌强光暴晒也忌过度荫蔽;掉叶多因环境变化",
+    rg:"华南最适宜(温暖湿润),华东华北室内养护忌频繁搬动,西南湿度好但光照注意"
+  }
+},
+{
+  n:"橡皮树",
+  c:"tree",
+  d:"入门级",
+  ds:"厚实油亮的经典室内大型绿植,净化空气",
+  img:"/img/plant/qinyerong.jpg",
+  fl:"稳重诚实,吉祥如意",
+  care:{
+    w:"春秋7-10天/次,夏季5天/次,冬季15-20天/次",
+    f:"春秋每月1次复合肥",
+    pr:"打顶促侧枝,剪口流白色乳汁(无毒但刺激皮肤)",
+    bl:null,
+    rp:"每2-3年春季换盆",
+    no:"耐阴性好但长期缺光会徒长;叶片灰尘需定期擦拭;汁液刺激皮肤",
+    rg:"全国室内均可,华南可室外半阴处,华北冬季10°C以上,华东适宜"
+  }
+},
+{
+  n:"散尾葵",
+  c:"tree",
+  d:"中等",
+  ds:"优雅大气的热带棕榈,天然加湿器",
+  img:"/img/plant/xiangpishu.jpg",
+  fl:"祥瑞高升,柔美飘逸",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季7-10天/次",
+    f:"春秋每月1次棕榈专用肥或稀薄复合肥",
+    pr:"剪除底部枯黄叶片",
+    bl:null,
+    rp:"每2-3年春季换大盆",
+    no:"叶尖干枯因空气干燥(需经常喷雾);忌强光和冷风;红蜘蛛高发需防治",
+    rg:"华南最适宜(热带植物),华东华北冬季必须室内+加湿,西南注意保温防冻"
+  }
+},
+{
+  n:"铁线蕨",
+  c:"foliage",
+  d:"较难",
+  ds:"精致飘逸的蕨类植物,喜湿喜阴的浴室绿植",
+  img:"/img/plant/sanweikui.jpg",
+  fl:"雅致少女,无悔青春",
+  care:{
+    w:"春秋每日或隔日喷雾+浇水,夏季每日浇水+多次喷雾,冬季3-5天/次",
+    f:"春秋每月1次极稀薄液肥(1/4浓度)",
+    pr:"剪除干枯叶片,老株可从基部剃头重发",
+    bl:null,
+    rp:"每年春季换盆分株",
+    no:"最怕空气干燥,必须高湿度环境;忌阳光直射;忌风吹;浴室或加湿器旁最佳",
+    rg:"华南湿度高最适宜,华东华北必须加湿(套盆/加湿器),西南湿度好但注意温度"
+  }
+},
+{
+  n:"蟹爪兰",
+  c:"succulent",
+  d:"中等",
+  ds:"冬春开花的附生仙人掌,花姿优美喜庆",
+  img:"/img/plant/tiexianjue.jpg",
+  fl:"鸿运当头,扭转乾坤,锦上添花",
+  care:{
+    w:"春秋5-7天/次,夏季休眠控水(15天/次),冬季7天/次",
+    f:"春秋每月1次磷钾肥,花前增施促花",
+    pr:"花后摘去1-2节叶片促新枝",
+    bl:"短日照处理(12h暗期) + 凉爽(15-20°C)催花芽",
+    rp:"每2-3年春季换盆",
+    no:"落蕾多因移动花盆或温度骤变;夏季休眠必须控水通风遮阳;嫁接在仙人掌上更旺",
+    rg:"华北冬季室内阳光窗台,华南夏季遮阳通风,华东注意梅雨季,西南凉爽促花"
+  }
+},
+{
+  n:"网纹草",
+  c:"foliage",
+  d:"入门级",
+  ds:"叶脉如网纹的精致小草,微景观必备",
+  img:"/img/plant/xiezhualian.jpg",
+  fl:"理性与智慧,清新可人",
+  care:{
+    w:"春秋2-3天/次(保持微湿),夏季每日1次+喷雾,冬季5-7天/次",
+    f:"春秋每月1次极稀薄液肥",
+    pr:"掐顶促分枝保持紧凑",
+    bl:null,
+    rp:"每年春季换盆或扦插更新",
+    no:"缺水立刻倒伏(但浇水后可恢复);忌强光;适合玻璃缸/微景观封闭养护",
+    rg:"全国室内均可,华北冬季防冻+加湿,华南高湿最适合,华东注意夏季通风"
+  }
+},
+{
+  n:"秋海棠",
+  c:"flowering",
+  d:"中等",
+  ds:"花色丰富的阴生花卉,四季海棠品种最多",
+  img:"/img/plant/wangwencao.jpg",
+  fl:"苦恋断肠,温和美丽",
+  care:{
+    w:"春秋3-5天/次,夏季2-3天/次,冬季5-7天/次",
+    f:"生长期每2周稀薄磷钾肥",
+    pr:"摘心促分枝,花后剪残花",
+    bl:"温暖+散射光+磷钾肥持续促花",
+    rp:"每年春季换盆或扦插更新",
+    no:"忌强光灼伤叶片;忌积水茎腐;叶片沾水易烂(浇根不浇叶)",
+    rg:"华南可室外半阴处,华东华北室内散射光,西南注意通风排水"
+  }
+},
+{
+  n:"矮牵牛",
+  c:"flowering",
+  d:"入门级",
+  ds:"爆盆神器,花量极大的阳台草花之王",
+  img:"/img/plant/qiuhaitang.jpg",
+  fl:"安心与你在一起,有你便觉得温馨",
+  care:{
+    w:"春秋2-3天/次,夏季每日1-2次,冬季停(一年生)",
+    f:"每周1-2次水溶肥(花多多2号)",
+    pr:"小苗期多次打顶促分枝,花后轻剪促复花",
+    bl:"全日照+勤肥+打顶后自然爆盆开花",
+    rp:"一年生不需换盆,每季播新苗或扦插",
+    no:"喜肥喜光,薄肥勤施是爆盆关键;雨季注意排水;夏季高温遮阳",
+    rg:"全国均可,华北5月定植,华南可秋冬春三季,华东4-5月定植最佳,西南注意排水"
+  }
+},
+{
+  n:"玛格丽特",
+  c:"flowering",
+  d:"中等",
+  ds:"花量巨大的爆盆草花,球形花球超梦幻",
+  img:"/img/plant/mageliete.jpg",
+  fl:"骄傲与满意,喜悦与暗恋",
+  care:{
+    w:"春秋2-3天/次,夏季每日1次+遮阳,冬季5-7天/次",
+    f:"每周1-2次水溶肥(花多多2号)",
+    pr:"小苗多次打顶促球形,花后重剪(剃头)促复花",
+    bl:"凉爽气候+全日照+勤肥+打顶促爆盆",
+    rp:"每年秋季换盆或扦插更新",
+    no:"夏季高温(>30°C)易枯,度夏是难点需遮阳通风;春秋为盛花期",
+    rg:"华北春秋最佳,华南夏季极难度夏,华东春秋爆盆,西南凉爽气候最适宜"
+  }
+},
+{
+  n:"非洲堇",
+  c:"flowering",
+  d:"中等",
+  ds:"室内开花小能手,一年四季花开不断",
+  img:"/img/plant/feizhoujin.jpg",
+  fl:"永恒的美,小小的心愿与爱",
+  care:{
+    w:"春秋3-5天/次(盆底浸水法),夏季5-7天/次,冬季7天/次",
+    f:"每2周非洲堇专用肥(1/4浓度)",
+    pr:"去除老叶残花,保持叶丛整洁",
+    bl:"散射光(忌直射)+ 温暖(18-24°C)+ 薄肥勤施自然持续开花",
+    rp:"每年春季换盆,叶插繁殖简单",
+    no:"叶片沾水易腐烂;忌阳光直射灼伤;浇水用室温水避免冷水刺激",
+    rg:"全国室内均可(最不受地域限制的室内花卉),北方冬季暖气房注意增湿"
+  }
+},
+{
+  n:"朱顶红",
+  c:"flowering",
+  d:"入门级",
+  ds:"球根大花,一球多箭花开富贵",
+  img:"/img/plant/zhudinghong.jpg",
+  fl:"渴望被爱,执着追求,热情似火",
+  care:{
+    w:"生长期3-5天/次,休眠期断水",
+    f:"生长期每2周磷钾肥",
+    pr:"花谢后剪花梗保留叶片养球",
+    bl:"球茎露出土面1/3+ 温暖+充足光照自然抽箭",
+    rp:"每2-3年春季换盆分球",
+    no:"种球1/3露出土面;积水易烂球;叶片越多养球越好来年花越多",
+    rg:"全国均可,华北冬季室内养球,华南可室外,华东最适宜,西南注意排水"
+  }
+},
+{
+  n:"水仙花",
+  c:"flowering",
+  d:"入门级",
+  ds:"中国传统年宵花,凌波仙子清香淡雅",
+  img:"/img/plant/shuixianhua.jpg",
+  fl:"自恋与思念,万事如意吉祥",
+  care:{
+    w:"水培每日换水(前期),开花后3天换1次;土培3-5天/次",
+    f:"水培不需施肥(球茎自带养分),土培每月1次磷钾肥",
+    pr:"花谢后剪花梗,土培保留叶片养球",
+    bl:"水培控温促花(白天15-20°C,夜间5-10°C),避免徒长",
+    rp:"水培一次性,土培花后养球秋季重新栽种",
+    no:"全株有毒(尤其球茎);水培易徒长(白天晒晚上冻控高);漳州水仙最著名",
+    rg:"全国均可水培,华北冬季窗台冷凉处,华南需低温催花,华东最适宜(漳州产区),西南适宜"
+  }
+},
+{
+  n:"风车茉莉",
+  c:"vine",
+  d:"入门级",
+  ds:"藤本芳香植物,小白花如风车旋转,花量大",
+  img:"/img/plant/aiqianniu.jpg",
+  fl:"依恋与信赖,幸福如风车般旋转",
+  care:{
+    w:"春秋3-5天/次,夏季每日1次,冬季7-10天/次",
+    f:"生长期每月1次复合肥,花前磷钾肥",
+    pr:"花后修剪过长枝条,引导攀爬方向",
+    bl:"春季充足光照+磷钾肥促花,新枝开花",
+    rp:"每2-3年春季换大盆或地栽",
+    no:"长势旺盛需搭架引导;汁液有毒避免皮肤接触;耐寒性好",
+    rg:"华东华南最适宜(可室外越冬),华北小气候保护可室外,西南适合做花墙"
+  }
+},
+{
+  n:"蓝雪花",
+  c:"vine",
+  d:"入门级",
+  ds:"夏季清凉蓝紫色花瀑布,耐热好养的藤本",
+  img:"/img/plant/fengchemoli.jpg",
+  fl:"冷淡与忧郁,淡雅坚韧的爱",
+  care:{
+    w:"春秋3-5天/次,夏季每日1-2次,冬季7-10天/次",
+    f:"生长期每周1次磷钾肥促花",
+    pr:"冬季重剪(留基部2-3芽),花后轻剪促复花",
+    bl:"全日照+磷钾肥+温暖(25-35°C)夏季盛花",
+    rp:"每年春季换盆",
+    no:"极耐热不怕晒(夏季主力花);不耐寒5°C以下落叶;花量大需勤肥",
+    rg:"华南最适宜(花期长),华东可室外越冬(轻霜),华北必须入室,西南夏季盛花期壮观"
+  }
+}
+];
+
+var encIndex=[
+// ===== 观叶植物 foliage =====
+["绿萝","foliage","入门级","浇水见干见湿"],
+["龟背竹","foliage","入门级","喜湿润散光"],
+["吊兰","foliage","入门级","喜湿润忌积水"],
+["虎皮兰","foliage","入门级","耐旱少浇水"],
+["发财树","foliage","入门级","浇水宁干勿湿"],
+["富贵竹","foliage","入门级","水培换水勤快"],
+["铜钱草","foliage","入门级","喜水喜光"],
+["文竹","foliage","中等","喜湿润忌暴晒"],
+["常春藤","foliage","入门级","喜凉爽湿润"],
+["琴叶榕","foliage","中等","喜光忌移动"],
+["橡皮树","foliage","入门级","喜光耐半阴"],
+["散尾葵","foliage","中等","喜湿润常喷水"],
+["铁线蕨","foliage","较难","忌干燥常喷水"],
+["网纹草","foliage","入门级","喜湿润怕干旱"],
+["春羽","foliage","入门级","喜半阴湿润"],
+["万年青","foliage","入门级","耐阴好养护"],
+["合果芋","foliage","入门级","喜湿润高温"],
+["彩叶芋","foliage","中等","喜高温高湿"],
+["竹芋","foliage","中等","忌直射光照"],
+["孔雀竹芋","foliage","中等","保持空气湿度"],
+["飞羽竹芋","foliage","中等","需较高空气湿度"],
+["豹纹竹芋","foliage","中等","喜阴忌强光"],
+["油画竹芋","foliage","较难","需高湿环境"],
+["天堂鸟","foliage","中等","喜光忌暴晒"],
+["量天尺","foliage","入门级","耐旱怕涝"],
+["幸福树","foliage","中等","喜湿润通风"],
+["平安树","foliage","中等","保持盆土湿润"],
+["鸭脚木","foliage","入门级","浇水见干见湿"],
+["金钱树","foliage","入门级","宁干勿湿"],
+["千年木","foliage","入门级","耐旱喜散光"],
+["百合竹","foliage","入门级","喜湿润忌积水"],
+["龙血树","foliage","入门级","宁干勿湿"],
+["袖珍椰子","foliage","入门级","保持土壤湿润"],
+["夏威夷椰子","foliage","中等","常喷水保湿"],
+["鱼尾葵","foliage","中等","喜湿润忌干燥"],
+["蒲葵","foliage","入门级","喜湿润通风"],
+["棕竹","foliage","入门级","喜湿润忌积水"],
+["观音竹","foliage","入门级","喜湿润半阴"],
+["一叶兰","foliage","入门级","耐阴忌强光"],
+["豆瓣绿","foliage","入门级","喜湿润耐旱"],
+["白鹤芋","foliage","入门级","保持盆土湿润"],
+["鸟巢蕨","foliage","中等","喜高湿环境"],
+["鹿角蕨","foliage","较难","需高湿环境"],
+["椒草","foliage","入门级","喜湿润忌积水"],
+["冷水花","foliage","入门级","喜湿润半阴"],
+["竹柏","foliage","入门级","喜半阴环境"],
+["罗汉松","foliage","中等","喜湿润通风"],
+["金钻蔓绿绒","foliage","中等","喜湿润忌干旱"],
+["蔓绿绒","foliage","入门级","喜半阴湿润"],
+["银皇后","foliage","入门级","耐阴喜湿润"],
+["黑美人","foliage","入门级","耐阴好养护"],
+["袖珍棕榈","foliage","入门级","喜光耐半阴"],
+["苏铁","foliage","入门级","喜光耐干旱"],
+["南洋杉","foliage","中等","喜湿润忌干燥"],
+["菩提树","foliage","中等","喜温暖半阴"],
+["变叶木","foliage","中等","喜光保叶色"],
+["朱蕉","foliage","入门级","喜光耐半阴"],
+["巴西木","foliage","入门级","耐阴管理粗放"],
+["鹅掌柴","foliage","入门级","浇水见干见湿"],
+["吊竹梅","foliage","入门级","喜湿润喜光"],
+["紫背竹芋","foliage","中等","喜湿润避强光"],
+["合欢","foliage","入门级","喜光耐干旱"],
+["花叶万年青","foliage","入门级","耐阴喜湿润"],
+["富贵椰","foliage","入门级","保持土壤湿润"],
+["凤尾竹","foliage","入门级","喜湿润通风"],
+["南天竹","foliage","入门级","耐寒耐旱好养"],
+["红花檵木","foliage","入门级","喜光耐修剪"],
+["金边黄杨","foliage","入门级","耐阴耐修剪"],
+["金心也门铁","foliage","入门级","耐阴少浇水"],
+["金边龙舌兰","foliage","入门级","耐旱喜光照"],
+["银边沿阶草","foliage","入门级","耐阴好养护"],
+["虎尾兰","foliage","入门级","耐旱少浇水"],
+["龙舌兰","foliage","入门级","耐旱喜光照"],
+["朱砂根","foliage","中等","喜半阴湿润"],
+["草珊瑚","foliage","入门级","喜阴湿环境"],
+["富贵籽","foliage","中等","喜半阴湿润"],
+["福禄桐","foliage","中等","喜湿润忌积水"],
+["八角金盘","foliage","入门级","耐阴喜湿润"],
+["洒金桃叶珊瑚","foliage","入门级","耐阴忌暴晒"],
+["龟甲冬青","foliage","入门级","喜光耐修剪"],
+["亮丝草","foliage","入门级","耐阴管理粗放"],
+["粗肋草","foliage","入门级","耐阴喜温暖"],
+["假连翘","foliage","入门级","喜光耐修剪"],
+["金叶假连翘","foliage","入门级","喜光保叶色"],
+["苏铁蕨","foliage","中等","喜湿润散光"],
+["蓬莱松","foliage","入门级","喜湿润半阴"],
+["狐尾武竹","foliage","入门级","耐旱喜光照"],
+["文殊兰","foliage","入门级","喜湿润喜光"],
+["蜘蛛抱蛋","foliage","入门级","极耐阴好养"],
+["镜面草","foliage","入门级","喜湿润散光"],
+["仙洞龟背竹","foliage","中等","喜湿润高湿"],
+["青苹果竹芋","foliage","中等","喜湿润避强光"],
+["西瓜皮椒草","foliage","入门级","喜湿润阴蔽"],
+["皱叶椒草","foliage","入门级","喜湿润半阴"],
+["圆叶椒草","foliage","入门级","喜湿润耐旱"],
+["碧玉","foliage","入门级","喜湿润忌积水"],
+["虹之玉锦","foliage","入门级","少水多晒太阳"],
+["玉树花","foliage","入门级","耐旱喜光照"],
+["沙漠玫瑰","foliage","中等","耐旱喜光照"],
+["朱蕉红","foliage","入门级","喜光保叶色"],
+["红钻蔓绿绒","foliage","中等","喜湿润避强光"],
+["小天使蔓绿绒","foliage","中等","喜半阴湿润"],
+["大叶仙芋","foliage","中等","喜湿润高温"],
+["海芋","foliage","中等","喜湿润忌强光"],
+["观音莲","foliage","中等","喜湿润忌积水"],
+["巢蕨","foliage","中等","耐阴喜湿润"],
+["卷柏","foliage","较难","喜高湿环境"],
+["翠云草","foliage","中等","喜湿润常喷水"],
+["白网纹草","foliage","入门级","喜湿润忌积水"],
+["彩叶草","foliage","入门级","喜光喜湿润"],
+// ===== 多肉植物 succulent =====
+["多肉","succulent","入门级","少水多晒太阳"],
+["仙人掌","succulent","入门级","极少浇水喜光"],
+["芦荟","succulent","入门级","耐旱喜光照"],
+["玉树","succulent","入门级","耐旱少浇水"],
+["石莲花","succulent","入门级","少水多晒太阳"],
+["虹之玉","succulent","入门级","少水多晒太阳"],
+["姬胧月","succulent","入门级","少水多晒太阳"],
+["桃美人","succulent","入门级","控水多晒太阳"],
+["乙女心","succulent","入门级","少水多晒太阳"],
+["黑法师","succulent","中等","夏季休眠少浇水"],
+["生石花","succulent","较难","蜕皮期断水"],
+["熊童子","succulent","较难","夏季休眠断水"],
+["玉露","succulent","中等","散光养护忌暴晒"],
+["寿","succulent","中等","散光忌暴晒"],
+["万象","succulent","较难","散光控水"],
+["条纹十二卷","succulent","入门级","耐半阴少浇水"],
+["仙人球","succulent","入门级","极少浇水喜光"],
+["仙人指","succulent","入门级","少浇水喜光"],
+["蟹爪兰","succulent","入门级","花期保持湿润"],
+["令箭荷花","succulent","入门级","喜光少浇水"],
+["虎刺梅","succulent","入门级","耐旱喜光照"],
+["龙骨","succulent","入门级","耐旱少浇水"],
+["麒麟掌","succulent","入门级","耐旱喜光照"],
+["景天","succulent","入门级","少水多晒太阳"],
+["火祭花","succulent","入门级","少水多晒太阳"],
+["紫珍珠","succulent","入门级","控水多晒出状态"],
+["白牡丹","succulent","入门级","少水多晒太阳"],
+["黄丽","succulent","入门级","少水多晒太阳"],
+["秋丽","succulent","入门级","少水多晒太阳"],
+["黑王子","succulent","入门级","控水多晒太阳"],
+["玉蝶","succulent","较难","夏季注意通风"],
+["鹿角海棠","succulent","入门级","少水喜光照"],
+["碧光环","succulent","较难","夏季休眠断水"],
+["五十铃玉","succulent","较难","控水散光养护"],
+["姬玉露","succulent","中等","散光忌暴晒"],
+["冰灯玉露","succulent","较难","散光控水"],
+["十二卷","succulent","入门级","耐半阴少浇水"],
+["京之华","succulent","入门级","散光少浇水"],
+["琉璃殿","succulent","入门级","散光少浇水"],
+["大和锦","succulent","入门级","少水多晒太阳"],
+["芙蓉雪莲","succulent","入门级","少水多晒太阳"],
+["特玉莲","succulent","入门级","少水多晒太阳"],
+["雪莲","succulent","较难","夏季通风控水"],
+["小红衣","succulent","较难","夏季休眠控水"],
+["静夜","succulent","中等","控水多晒太阳"],
+["花月夜","succulent","入门级","少水多晒太阳"],
+["月光女神","succulent","入门级","少水多晒太阳"],
+["蒂亚","succulent","入门级","少水多晒太阳"],
+["紫乐","succulent","入门级","少水多晒太阳"],
+["火祭","succulent","入门级","控水多晒出状态"],
+["唐印","succulent","入门级","少水多晒太阳"],
+["雀扇","succulent","入门级","少水喜光照"],
+["岩牡丹","succulent","较难","极少浇水喜光"],
+["乌羽玉","succulent","较难","少水喜光照"],
+["鸾凤玉","succulent","较难","少水喜光照"],
+["星球","succulent","较难","少水散光养护"],
+["绯牡丹","succulent","中等","少水喜光照"],
+["山影拳","succulent","入门级","耐旱少浇水"],
+["金琥","succulent","入门级","少水喜光照"],
+["量天尺柱","succulent","入门级","耐旱喜光照"],
+["假昙花","succulent","入门级","花期保持湿润"],
+["昙花","succulent","入门级","夜间开花喜湿润"],
+["箭叶芋","succulent","入门级","喜湿润半阴"],
+["燕子掌","succulent","入门级","耐旱少浇水"],
+["筒叶花月","succulent","入门级","耐旱少浇水"],
+["落日之雁","succulent","入门级","少水多晒太阳"],
+["星美人","succulent","入门级","少水多晒太阳"],
+["千佛手","succulent","入门级","少水多晒太阳"],
+["佛珠","succulent","中等","喜湿润忌积水"],
+["情人泪","succulent","中等","喜湿润忌积水"],
+// ===== 开花植物 flowering =====
+["茉莉花","flowering","中等","喜酸性土勤修剪"],
+["栀子花","flowering","中等","喜酸性土喜光"],
+["月季","flowering","中等","喜光勤施肥"],
+["三角梅","flowering","中等","控水促花"],
+["长寿花","flowering","入门级","短日照促花"],
+["天竺葵","flowering","入门级","喜光忌积水"],
+["绣球花","flowering","中等","喜酸性土喜湿润"],
+["杜鹃花","flowering","较难","喜酸性土忌碱"],
+["茶花","flowering","较难","喜酸性湿润土"],
+["君子兰","flowering","中等","忌积水忌暴晒"],
+["仙客来","flowering","中等","夏季休眠断水"],
+["风信子","flowering","入门级","水培土培均可"],
+["郁金香","flowering","中等","需低温春化"],
+["百合花","flowering","入门级","喜光忌积水"],
+["芍药","flowering","中等","秋季分株为宜"],
+["康乃馨","flowering","入门级","喜光忌积水"],
+["满天星","flowering","入门级","喜光耐旱"],
+["雏菊","flowering","入门级","喜凉爽湿润"],
+["秋海棠","flowering","入门级","喜湿润忌暴晒"],
+["矮牵牛","flowering","入门级","喜光勤修剪"],
+["玛格丽特","flowering","入门级","喜光勤修剪"],
+["非洲堇","flowering","中等","忌叶面沾水"],
+["朱顶红","flowering","入门级","球根忌积水"],
+["蓝雪花","flowering","入门级","喜光勤施肥"],
+["蝴蝶兰","flowering","中等","忌积水喜温暖"],
+["大花蕙兰","flowering","较难","需通风高湿"],
+["文心兰","flowering","中等","忌积水喜通风"],
+["石斛兰","flowering","中等","喜湿润通风"],
+["建兰","flowering","较难","喜通风半阴"],
+["春兰","flowering","较难","喜通风半阴"],
+["墨兰","flowering","较难","喜半阴湿润"],
+["寒兰","flowering","较难","喜通风半阴"],
+["太阳花","flowering","入门级","喜光耐旱"],
+["凤仙花","flowering","入门级","喜光喜湿润"],
+["鸡冠花","flowering","入门级","喜光喜温暖"],
+["一串红","flowering","入门级","喜光勤修剪"],
+["万寿菊","flowering","入门级","喜光耐旱"],
+["波斯菊","flowering","入门级","喜光耐贫瘠"],
+["百日草","flowering","入门级","喜光耐旱"],
+["向日葵","flowering","入门级","喜光充足水分"],
+["牵牛花","flowering","入门级","喜光勤浇水"],
+["紫罗兰","flowering","中等","喜凉爽忌闷热"],
+["金鱼草","flowering","入门级","喜光喜凉爽"],
+["三色堇","flowering","入门级","喜凉爽湿润"],
+["角堇","flowering","入门级","喜凉爽湿润"],
+["石竹","flowering","入门级","喜光耐旱"],
+["美女樱","flowering","入门级","喜光喜湿润"],
+["长春花","flowering","入门级","喜光耐热"],
+["四季海棠","flowering","入门级","喜湿润忌暴晒"],
+["丽格海棠","flowering","较难","忌叶面沾水"],
+["倒挂金钟","flowering","较难","喜凉爽忌高温"],
+["扶桑花","flowering","入门级","喜光勤施肥"],
+["龙船花","flowering","中等","喜酸性土喜光"],
+["黄蝉花","flowering","入门级","喜光喜温暖"],
+["夹竹桃","flowering","入门级","喜光耐旱有毒"],
+["鸡蛋花","flowering","入门级","喜光耐旱"],
+["蓝目菊","flowering","入门级","喜光耐旱"],
+["红掌","flowering","入门级","喜湿润忌暴晒"],
+["白掌","flowering","入门级","喜湿润忌暴晒"],
+["火鹤花","flowering","入门级","喜湿润忌暴晒"],
+["凤梨花","flowering","中等","叶杯注水养护"],
+["红星凤梨","flowering","中等","叶杯注水养护"],
+["擎天凤梨","flowering","中等","叶杯注水养护"],
+["鸿运当头","flowering","中等","叶杯注水养护"],
+["大岩桐","flowering","较难","忌叶面沾水"],
+["海角樱草","flowering","较难","喜湿润忌积水"],
+["口红花","flowering","入门级","喜湿润半阴"],
+["金鱼吊兰","flowering","入门级","喜湿润半阴"],
+["球兰","flowering","中等","喜湿润勿剪花梗"],
+["飘香藤","flowering","入门级","喜光喜温暖"],
+["使君子","flowering","入门级","喜光喜温暖"],
+["蒜香藤","flowering","入门级","喜光耐修剪"],
+["炮仗花","flowering","入门级","喜光喜温暖"],
+["凌霄花","flowering","入门级","喜光耐旱"],
+["金银花","flowering","入门级","喜光耐旱"],
+["风车茉莉","flowering","入门级","喜光喜湿润"],
+["铁线莲","flowering","中等","喜光根部遮阴"],
+["紫藤","flowering","中等","喜光耐修剪"],
+["杜鹃","flowering","较难","喜酸性湿润土"],
+["山茶","flowering","较难","喜酸性湿润土"],
+["牡丹","flowering","较难","秋季栽植喜光"],
+["腊梅","flowering","中等","冬季开花喜光"],
+["贴梗海棠","flowering","入门级","喜光耐修剪"],
+["垂丝海棠","flowering","入门级","喜光喜湿润"],
+["西府海棠","flowering","入门级","喜光喜湿润"],
+["木棉","flowering","入门级","喜光耐旱"],
+["凤凰木","flowering","入门级","喜光喜温暖"],
+["蓝花楹","flowering","入门级","喜光喜温暖"],
+["黄花风铃木","flowering","入门级","喜光喜温暖"],
+["宫粉紫荆","flowering","入门级","喜光喜温暖"],
+["叶子花","flowering","中等","控水促花"],
+["勋章菊","flowering","入门级","喜光耐旱"],
+["瓜叶菊","flowering","中等","喜凉爽湿润"],
+["蒲包花","flowering","较难","喜凉爽忌积水"],
+["报春花","flowering","中等","喜凉爽湿润"],
+["藏报春","flowering","中等","喜凉爽湿润"],
+["朱槿","flowering","入门级","喜光勤施肥"],
+["木芙蓉","flowering","入门级","喜光喜湿润"],
+["繁星花","flowering","入门级","喜光耐热"],
+["黄钟花","flowering","入门级","喜光喜温暖"],
+["火焰木","flowering","入门级","喜光喜温暖"],
+["鸢尾花","flowering","入门级","喜湿润喜光"],
+["紫娇花","flowering","入门级","喜光耐旱"],
+["葱兰","flowering","入门级","喜光耐旱"],
+["韭兰","flowering","入门级","喜光耐旱"],
+["风雨兰","flowering","入门级","雨后开花"],
+["花毛茛","flowering","中等","喜凉爽湿润"],
+["洋桔梗","flowering","中等","喜光忌积水"],
+["勿忘我","flowering","入门级","喜光耐旱"],
+["薰衣草","flowering","中等","喜光忌积水"],
+["鼠尾草","flowering","入门级","喜光耐旱"],
+["迷迭香","flowering","入门级","喜光耐旱"],
+["天蓝鼠尾草","flowering","入门级","喜光耐旱"],
+["深蓝鼠尾草","flowering","入门级","喜光耐旱"],
+["萼距花","flowering","入门级","喜光喜温暖"],
+["金铃花","flowering","入门级","喜光喜温暖"],
+["悬铃花","flowering","入门级","喜光喜温暖"],
+["龙吐珠","flowering","入门级","喜光喜湿润"],
+["炮仗竹","flowering","入门级","喜光耐旱"],
+["赪桐","flowering","入门级","喜光喜温暖"],
+// ===== 香草/食用 herb =====
+["薄荷","herb","入门级","喜水喜光"],
+["柠檬香茅","herb","入门级","喜光喜湿润"],
+["留兰香","herb","入门级","喜水喜光"],
+["碰碰香","herb","入门级","耐旱喜光"],
+["罗勒","herb","入门级","喜光勤采摘"],
+["百里香","herb","入门级","喜光耐旱"],
+["苹果薄荷","herb","入门级","喜水喜光"],
+["藿香","herb","入门级","喜光喜湿润"],
+["紫苏","herb","入门级","喜光喜温暖"],
+["香茅","herb","入门级","喜光喜湿润"],
+["柠檬草","herb","入门级","喜光喜湿润"],
+["枸杞","herb","入门级","耐旱喜光"],
+["小葱","herb","入门级","喜湿润喜光"],
+["韭菜","herb","入门级","喜湿润喜肥"],
+["香菜","herb","入门级","喜凉爽湿润"],
+["蒜苗","herb","入门级","喜湿润喜光"],
+["芹菜","herb","入门级","喜湿润喜肥"],
+["生菜","herb","入门级","喜凉爽湿润"],
+["小白菜","herb","入门级","喜湿润喜肥"],
+["樱桃萝卜","herb","入门级","喜凉爽湿润"],
+["草莓","herb","中等","喜光喜肥"],
+["矮生番茄","herb","中等","喜光喜肥"],
+["辣椒","herb","入门级","喜光喜温暖"],
+["牛至","herb","入门级","喜光耐旱"],
+["香葱","herb","入门级","喜湿润喜光"],
+["荆芥","herb","入门级","喜凉爽湿润"],
+["鱼腥草","herb","入门级","喜湿润耐阴"],
+["车前草","herb","入门级","喜湿润耐阴"],
+["蒲公英","herb","入门级","耐旱喜光"],
+["龙蒿","herb","入门级","喜光耐旱"],
+["菊花","herb","入门级","喜光喜肥"],
+["玫瑰","herb","中等","喜光勤施肥"],
+["桂花","herb","中等","喜光喜酸性土"],
+["花椒","herb","入门级","喜光耐旱"],
+["生姜","herb","入门级","喜湿润半阴"],
+["芋头","herb","入门级","喜湿润喜肥"],
+["红薯叶","herb","入门级","喜光喜湿润"],
+["空心菜","herb","入门级","喜湿润喜光"],
+["木耳菜","herb","入门级","喜湿润喜温暖"],
+["穿心莲","herb","入门级","喜湿润喜光"],
+["紫背天葵","herb","入门级","喜湿润半阴"],
+["食用芦荟","herb","入门级","耐旱喜光照"],
+["食用仙人掌","herb","入门级","耐旱喜光照"],
+["香椿","herb","入门级","喜光喜温暖"],
+["花椒叶","herb","入门级","喜光耐旱"],
+["藿香蓟","herb","入门级","喜光喜湿润"],
+["柠檬香蜂草","herb","入门级","喜光喜湿润"],
+["甜叶菊","herb","入门级","喜光喜湿润"],
+["洋甘菊","herb","入门级","喜光耐旱"],
+["香芹","herb","入门级","喜凉爽湿润"],
+// ===== 藤本植物 vine =====
+["花叶常春藤","vine","入门级","喜凉爽湿润"],
+["木通","vine","入门级","耐寒喜光"],
+["五味子","vine","入门级","耐寒喜湿润"],
+["南蛇藤","vine","入门级","耐寒耐旱"],
+["葛藤","vine","入门级","耐旱喜光"],
+["藤本月季","vine","中等","喜光勤施肥"],
+["鸡血藤","vine","入门级","喜光喜温暖"],
+["藤三七","vine","入门级","喜湿润半阴"],
+["落葵","vine","入门级","喜光喜湿润"],
+["何首乌","vine","入门级","喜湿润半阴"],
+["薜荔","vine","入门级","喜湿润耐阴"],
+["络石藤","vine","入门级","喜光耐旱"],
+["爬山虎","vine","入门级","耐寒耐旱耐阴"],
+["栝楼","vine","入门级","喜光喜湿润"],
+["葡萄","vine","中等","喜光勤修剪"],
+["猕猴桃","vine","中等","喜光喜湿润"],
+["百香果","vine","中等","喜光喜温暖"],
+["白粉藤","vine","入门级","喜湿润半阴"],
+["勾儿茶","vine","入门级","喜光耐旱"],
+["蛇葡萄","vine","入门级","耐寒喜光"],
+["茑萝","vine","入门级","喜光喜湿润"],
+["爬山虎锦","vine","入门级","耐寒耐旱"],
+["月光花","vine","入门级","喜光喜温暖"],
+["葫芦","vine","入门级","喜光喜湿润"],
+["丝瓜","vine","入门级","喜光喜湿润"],
+["苦瓜","vine","入门级","喜光喜湿润"],
+["南瓜","vine","入门级","喜光喜湿润"],
+["黄瓜","vine","入门级","喜光喜湿润"],
+["扁豆","vine","入门级","喜光喜温暖"],
+["豌豆","vine","入门级","喜凉爽湿润"],
+["常春油麻藤","vine","入门级","喜光耐旱"],
+["禾雀花","vine","中等","喜光喜温暖"],
+["大花老鸦嘴","vine","入门级","喜光喜温暖"],
+["珊瑚藤","vine","入门级","喜光喜温暖"],
+["粉背雷公藤","vine","入门级","喜光耐旱"],
+["金杯藤","vine","入门级","喜光喜温暖"],
+["西番莲","vine","中等","喜光喜温暖"],
+["锦屏藤","vine","入门级","喜光喜温暖"],
+["三角梅藤","vine","中等","控水促花"],
+["藤本皇后","vine","入门级","喜光喜温暖"],
+// ===== 乔木/灌木 tree =====
+["小叶女贞","tree","入门级","喜光耐修剪"],
+["梅花","tree","中等","耐寒冬季控水"],
+["玉兰","tree","入门级","喜光忌积水"],
+["海棠","tree","入门级","喜光耐修剪"],
+["黄栌","tree","入门级","喜光耐旱"],
+["梧桐","tree","入门级","喜光喜湿润"],
+["紫薇","tree","入门级","喜光耐修剪"],
+["木槿","tree","入门级","喜光耐旱"],
+["丁香","tree","入门级","喜光耐寒"],
+["含笑","tree","中等","喜半阴湿润"],
+["瑞香","tree","中等","喜半阴忌积水"],
+["米兰","tree","中等","喜光喜温暖"],
+["九里香","tree","入门级","喜光耐修剪"],
+["栾树","tree","入门级","喜光耐旱"],
+["乌桕","tree","入门级","喜光耐旱"],
+["女贞","tree","入门级","喜光耐修剪"],
+["枸骨","tree","入门级","耐阴喜湿润"],
+["红豆杉","tree","中等","喜半阴湿润"],
+["茶梅","tree","中等","喜酸性湿润土"],
+["蜡梅","tree","中等","冬季开花喜光"],
+["迎春花","tree","入门级","耐寒喜光"],
+["连翘","tree","入门级","耐寒喜光"],
+["紫荆","tree","入门级","喜光耐旱"],
+["石榴","tree","入门级","喜光耐旱"],
+["无花果","tree","入门级","喜光喜湿润"],
+["金桔","tree","中等","喜光勤施肥"],
+["佛手","tree","中等","喜光喜温暖"],
+["柠檬树","tree","中等","喜光勤施肥"],
+["橘子树","tree","中等","喜光勤施肥"],
+["柚子树","tree","中等","喜光喜温暖"],
+["黄皮树","tree","入门级","喜光喜温暖"],
+["荔枝","tree","入门级","喜光喜温暖"],
+["龙眼","tree","入门级","喜光喜温暖"],
+["枇杷","tree","入门级","喜光喜温暖"],
+["杨梅","tree","中等","喜酸性湿润土"],
+["桃树","tree","中等","喜光勤修剪"],
+["樱花","tree","中等","喜光忌积水"],
+["红枫","tree","中等","喜光忌暴晒"],
+["银杏","tree","入门级","喜光耐旱"],
+["香樟","tree","入门级","喜光喜温暖"],
+["榕树","tree","入门级","喜光喜湿润"],
+["十大功劳","tree","入门级","耐阴喜湿润"],
+["金丝桃","tree","入门级","喜光喜湿润"],
+["棣棠","tree","入门级","喜光耐修剪"],
+["结香","tree","入门级","喜半阴湿润"],
+["六月雪","tree","入门级","喜光耐修剪"],
+["檵木","tree","入门级","喜光耐修剪"],
+["金叶女贞","tree","入门级","喜光耐修剪"],
+["木莲","tree","中等","喜半阴湿润"],
+["蚊母树","tree","入门级","耐阴耐修剪"],
+["胡颓子","tree","入门级","耐旱喜光"],
+["菲白竹","tree","入门级","喜半阴湿润"],
+["阔叶十大功劳","tree","入门级","耐阴喜湿润"],
+["日本小檗","tree","入门级","喜光耐修剪"],
+["火棘","tree","入门级","喜光耐修剪"],
+["锦带花","tree","入门级","喜光耐寒"],
+["珍珠梅","tree","入门级","喜光耐修剪"],
+["石楠","tree","入门级","喜光耐修剪"],
+["海桐","tree","入门级","喜光耐修剪"],
+["绣线菊","tree","入门级","喜光耐修剪"],
+// ===== 球根植物 bulb =====
+["水仙花","bulb","入门级","水培多见阳光"],
+["大葱花","bulb","入门级","喜光耐旱"],
+["大花葱","bulb","入门级","喜光耐旱"],
+["马蹄莲","bulb","中等","喜湿润喜光"],
+["百合","bulb","入门级","喜光忌积水"],
+["番红花","bulb","入门级","秋季种植喜光"],
+["雪滴花","bulb","入门级","耐寒喜湿润"],
+["洋水仙","bulb","入门级","喜光忌积水"],
+["葡萄风信子","bulb","入门级","喜光忌积水"],
+["小苍兰","bulb","入门级","喜光喜湿润"],
+["唐菖蒲","bulb","入门级","喜光喜温暖"],
+["大丽花","bulb","中等","喜光忌积水"],
+["美人蕉","bulb","入门级","喜光喜湿润"],
+["晚香玉","bulb","入门级","喜光喜温暖"],
+["石蒜","bulb","入门级","喜湿润耐阴"],
+["彼岸花","bulb","入门级","喜湿润耐阴"],
+["忽地笑","bulb","入门级","喜湿润耐阴"],
+["换锦花","bulb","入门级","喜湿润耐阴"],
+["中国水仙","bulb","入门级","水培多见阳光"],
+["洋朱顶红","bulb","入门级","球根忌积水"],
+["彩色马蹄莲","bulb","较难","喜湿润忌积水"],
+["番水仙","bulb","入门级","喜光忌积水"],
+["弹簧草","bulb","入门级","喜光少浇水"],
+["垂筒花","bulb","入门级","喜光喜湿润"],
+["鸢尾","bulb","入门级","喜湿润喜光"],
+["德国鸢尾","bulb","入门级","喜光耐旱"],
+["百合水仙","bulb","入门级","喜光忌积水"],
+["六出花","bulb","中等","喜光喜湿润"],
+["嘉兰","bulb","较难","喜湿润半阴"],
+["网球花","bulb","较难","喜温暖忌积水"],
+// ===== 水生植物 aquatic =====
+["荷花","aquatic","中等","全日照喜温暖"],
+["睡莲","aquatic","中等","喜光喜静水"],
+["碗莲","aquatic","中等","喜光喜温暖"],
+["水葫芦","aquatic","入门级","繁殖力极强"],
+["水培铜钱草","aquatic","入门级","喜水喜光"],
+["菖蒲","aquatic","入门级","喜湿润耐阴"],
+["水芹","aquatic","入门级","喜湿润喜光"],
+["萍蓬草","aquatic","入门级","喜光喜静水"],
+["水芙蓉","aquatic","入门级","喜温暖水面"],
+["萍","aquatic","入门级","喜温暖水面"],
+["荇菜","aquatic","入门级","喜光喜静水"],
+["黄花水龙","aquatic","入门级","喜光喜温暖"],
+["水竹","aquatic","入门级","喜湿润喜光"],
+["旱伞草","aquatic","入门级","喜湿润喜光"],
+["纸莎草","aquatic","入门级","喜湿润喜光"],
+["再力花","aquatic","入门级","喜光喜温暖"],
+["千屈菜","aquatic","入门级","喜光喜湿润"],
+["梭鱼草","aquatic","入门级","喜光喜温暖"],
+["水菖蒲","aquatic","入门级","喜湿润耐阴"],
+["水蕨","aquatic","入门级","喜湿润半阴"]
+];
+
+var fortunes=[
+{flower:"\u5411\u65E5\u8475",emoji:"\uD83C\uDF3B",text:"\u4ECA\u5929\u9002\u5408\u5927\u80C6\u8FC8\u51FA\u7B2C\u4E00\u6B65\u3002\u9633\u5149\u603B\u5728\u524D\u65B9\uFF0C\u4F60\u53EA\u9700\u8981\u8F6C\u8EAB\u9762\u5BF9\u5B83\u3002",lucky:"\u660E\u9EC4\u8272",advice:"\u505A\u4E00\u4EF6\u4E00\u76F4\u60F3\u505A\u4F46\u4E0D\u6562\u505A\u7684\u4E8B"},
+{flower:"\u73AB\u7470",emoji:"\uD83C\uDF39",text:"\u6709\u4EBA\u6B63\u5728\u6084\u6084\u6B23\u8D4F\u4F60\u7684\u7F8E\u597D\u3002\u4E0D\u5FC5\u523B\u610F\u8868\u73B0\uFF0C\u4F60\u672C\u6765\u7684\u6837\u5B50\u5C31\u8DB3\u591F\u52A8\u4EBA\u3002",lucky:"\u73AB\u7470\u7EA2",advice:"\u5BF9\u955C\u5B50\u91CC\u7684\u81EA\u5DF1\u7B11\u4E00\u7B11"},
+{flower:"\u6EE1\u5929\u661F",emoji:"\u2728",text:"\u4F60\u662F\u522B\u4EBA\u6545\u4E8B\u91CC\u7684\u4E00\u675F\u5149\u3002\u4E5F\u8BB8\u4F60\u7684\u4E00\u53E5\u8BDD\uFF0C\u5DF2\u6E29\u6696\u4E86\u4E00\u4E2A\u591C\u665A\u3002",lucky:"\u94F6\u767D\u8272",advice:"\u7ED9\u5F88\u4E45\u6CA1\u8054\u7CFB\u7684\u4EBA\u53D1\u6761\u6D88\u606F"},
+{flower:"\u85B0\u8863\u8349",emoji:"\uD83D\uDC9C",text:"\u653E\u6162\u811A\u6B65\u4E0D\u662F\u5077\u61D2\uFF0C\u662F\u8BA9\u7075\u9B42\u8DDF\u4E0A\u8EAB\u4F53\u3002\u4ECA\u5929\uFF0C\u5141\u8BB8\u81EA\u5DF1\u4EC0\u4E48\u90FD\u4E0D\u505A\u3002",lucky:"\u6DE1\u7D2B\u8272",advice:"\u7761\u524D\u6CE1\u4E00\u676F\u82B1\u8336\uFF0C\u4E94\u5206\u949F\u5B81\u9759"},
+{flower:"\u96CF\u83CA",emoji:"\uD83C\uDF3C",text:"\u7B80\u5355\u7684\u4E8B\u91CC\u85CF\u7740\u5927\u5927\u7684\u5E78\u798F\u3002\u4ECA\u5929\u7684\u5FEB\u4E50\u53EF\u80FD\u5728\u4E00\u676F\u5496\u5561\u3001\u4E00\u9996\u6B4C\u3001\u4E00\u9635\u98CE\u91CC\u3002",lucky:"\u5AE9\u7EFF\u8272",advice:"\u51FA\u95E8\u6563\u6B65\u5341\u5206\u949F\uFF0C\u7559\u610F\u8DEF\u8FB9\u5C0F\u82B1"},
+{flower:"\u767E\u5408",emoji:"\uD83E\uDD0D",text:"\u4F60\u503C\u5F97\u88AB\u6E29\u67D4\u4EE5\u5F85\u3002\u4E0D\u5FC5\u4E8B\u4E8B\u5B8C\u7F8E\uFF0C\u5076\u5C14\u793A\u5F31\u4E5F\u662F\u4E00\u79CD\u529B\u91CF\u3002",lucky:"\u73CD\u73E0\u767D",advice:"\u5BF9\u81EA\u5DF1\u8BF4\u4E00\u58F0\u8F9B\u82E6\u4E86"},
+{flower:"\u8309\u8389",emoji:"\uD83C\uDF38",text:"\u597D\u4E8B\u6B63\u5728\u8D76\u6765\u7684\u8DEF\u4E0A\u3002\u5F88\u591A\u7F8E\u597D\u90FD\u53D1\u751F\u5728\u4F60\u770B\u4E0D\u89C1\u7684\u65F6\u5019\u3002",lucky:"\u8309\u8389\u767D",advice:"\u79CD\u4E0B\u4E00\u9897\u79CD\u5B50\u2014\u2014\u771F\u7684\u6216\u4E00\u4E2A\u8BA1\u5212"},
+{flower:"\u7EE3\u7403",emoji:"\uD83D\uDC99",text:"\u4F60\u8EAB\u8FB9\u7684\u4EBA\u6B63\u56E0\u4F60\u800C\u53D8\u5F97\u66F4\u597D\u3002\u6709\u4E9B\u5F71\u54CD\u4F60\u81EA\u5DF1\u770B\u4E0D\u5230\u3002",lucky:"\u5929\u7A7A\u84DD",advice:"\u548C\u8EAB\u8FB9\u7684\u4EBA\u804A\u4E00\u4E2A\u8F7B\u677E\u8BDD\u9898"},
+{flower:"\u90C1\u91D1\u9999",emoji:"\uD83C\uDF37",text:"\u6BCF\u4E00\u6B21\u7ED3\u675F\u90FD\u662F\u65B0\u7684\u5F00\u59CB\u3002\u66F4\u597D\u7684\u6B63\u5728\u817E\u51FA\u7A7A\u95F4\u3002",lucky:"\u73CA\u7469\u6A59",advice:"\u6574\u7406\u4E00\u4E2A\u5C0F\u89D2\u843D\u2014\u2014\u4E66\u67B6\u3001\u684C\u9762\u6216\u76F8\u518C"},
+{flower:"\u828D\u836F",emoji:"\uD83E\uDE77",text:"\u4F60\u6BD4\u60F3\u8C61\u4E2D\u66F4\u6709\u529B\u91CF\u3002\u90A3\u4E9B\u4EE5\u4E3A\u8FC7\u4E0D\u53BB\u7684\u574E\uFF0C\u56DE\u5934\u770B\u90FD\u6210\u4E86\u98CE\u666F\u3002",lucky:"\u828D\u836F\u7C89",advice:"\u5199\u4E09\u4E2A\u611F\u8C22\u81EA\u5DF1\u7684\u7406\u7531"},
+{flower:"\u6800\u5B50\u82B1",emoji:"\uD83C\uDF3C",text:"\u56DE\u5FC6\u662F\u4E00\u6735\u4E0D\u4F1A\u51CB\u8C22\u7684\u82B1\u3002\u60F3\u8D77\u67D0\u4E2A\u4EBA\u65F6\uFF0C\u5FAE\u7B11\u7740\u5C31\u597D\u3002",lucky:"\u6800\u5B50\u767D",advice:"\u7FFB\u770B\u8001\u7167\u7247\uFF0C\u7ED9\u7167\u7247\u91CC\u7684\u4EBA\u53D1\u6D88\u606F"},
+{flower:"\u9F9F\u80CC\u7AF9",emoji:"\uD83C\uDF31",text:"\u6210\u957F\u4E0D\u5FC5\u5B8C\u7F8E\u3002\u9F9F\u80CC\u7AF9\u7684\u53F6\u7247\u5929\u7136\u6709\u88C2\u7EB9\uFF0C\u6B63\u662F\u8FD9\u4E9B\u88C2\u7EB9\u8BA9\u5B83\u72EC\u4E00\u65E0\u4E8C\u3002",lucky:"\u68EE\u6797\u7EFF",advice:"\u4ECA\u5929\u63A5\u53D7\u4E00\u4E2A\u81EA\u5DF1\u7684\u5C0F\u7F3A\u70B9"}
+];
+
+var monthFlowers=[
+{month:"\u4E00\u6708",flower:"\u6C34\u4ED9",emoji:"\uD83C\uDF3C",tip:"\u6E05\u6C34\u517B\u7403\uFF0C\u6625\u8282\u524D\u540E\u5F00\u82B1"},
+{month:"\u4E8C\u6708",flower:"\u6885\u82B1",emoji:"\uD83C\uDF38",tip:"\u63A2\u6885\u597D\u65F6\u8282"},
+{month:"\u4E09\u6708",flower:"\u90C1\u91D1\u9999",emoji:"\uD83C\uDF37",tip:"\u7403\u6839\u79CB\u51AC\u79CD\uFF0C\u6625\u5929\u5F00\u82B1"},
+{month:"\u56DB\u6708",flower:"\u7261\u4E39",emoji:"\uD83E\uDE77",tip:"\u82B1\u4E2D\u4E4B\u738B\uFF0C\u8C37\u96E8\u76DB\u5F00"},
+{month:"\u4E94\u6708",flower:"\u828D\u836F",emoji:"\uD83C\uDF3A",tip:"\u82B1\u4E2D\u5BB0\u76F8\uFF0C\u7261\u4E39\u540E\u767B\u573A"},
+{month:"\u516D\u6708",flower:"\u7EE3\u7403",emoji:"\uD83D\uDC99",tip:"\u9178\u571F\u84DD\u82B1\uFF0C\u78B1\u571F\u7C89\u82B1"},
+{month:"\u4E03\u6708",flower:"\u8377\u82B1",emoji:"\uD83E\uDEB7",tip:"\u51FA\u6DE4\u6CE5\u800C\u4E0D\u67D3"},
+{month:"\u516B\u6708",flower:"\u6842\u82B1",emoji:"\uD83C\uDF3C",tip:"\u516B\u6708\u6842\u82B1\u9999"},
+{month:"\u4E5D\u6708",flower:"\u83CA\u82B1",emoji:"\uD83C\uDF3B",tip:"\u79CB\u83CA\u50B2\u971C\uFF0C\u4E09\u4E07\u54C1\u79CD"},
+{month:"\u5341\u6708",flower:"\u8299\u84C9",emoji:"\uD83E\uDE77",tip:"\u4E00\u65E5\u4E09\u53D8\u8272"},
+{month:"\u5341\u4E00\u6708",flower:"\u5C71\u8336",emoji:"\uD83C\uDF39",tip:"\u51AC\u6625\u82B1\u738B\uFF0C\u82B1\u671F\u534A\u5E74"},
+{month:"\u5341\u4E8C\u6708",flower:"\u814A\u6885",emoji:"\uD83C\uDF3C",tip:"\u51CC\u5BD2\u72EC\u5F00\uFF0C\u6697\u9999\u6D6E\u52A8"}
+];
+
+// ========== STATE ==========
+var S = {
+  step: 0,
+  name: "",
+  plant: null,
+  tab: "home",
+  apiOk: false,
+  photo: null,
+  photoUrl: null,
+  busy: false,
+  apiRes: null,
+  apiErr: null,
+  giftId: null,
+  giftStep: 0,
+  giftForm: null,
+  giftResults: null,
+  encCat: "all",
+  encPlant: null,
+  encSearch: "",
+  encSearchResults: null,
+  fortune: null,
+  shuffled: fortunes.slice().sort(function() { return Math.random() - 0.5; })
+};
+
+var today = new Date().toDateString();
+var dayIdx = today.split("").reduce(function(a, c) { return a + c.charCodeAt(0); }, 0) % fortunes.length;
+S.dailyFortune = fortunes[dayIdx];
+
+// ========== HELPERS ==========
+function Q(sel) { return document.querySelector(sel); }
+function QA(sel) { return document.querySelectorAll(sel); }
+function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+// ========== STORAGE ==========
+function saveState() {
+  try {
+    var data = { name: S.name, plantId: S.plant ? S.plant.id : null, tab: S.tab };
+    localStorage.setItem("zouhualu", JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem("zouhualu");
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    if (!data.name) return false;
+    S.name = data.name;
+    if (data.plantId) {
+      for (var i = 0; i < spiritPlants.length; i++) {
+        if (spiritPlants[i].id === data.plantId) { S.plant = spiritPlants[i]; break; }
+      }
+    }
+    if (data.tab) S.tab = data.tab;
+    return true;
+  } catch(e) { return false; }
+}
+
+function doLogout() {
+  try { localStorage.removeItem("zouhualu"); } catch(e) {}
+  S.name = ""; S.plant = null; S.step = 0; S.tab = "home";
+  Q("#scr-main").classList.remove("active");
+  Q("#scr-onboard").classList.add("active");
+  renderOnboard();
+}
+
+function greeting() {
+  var hr = new Date().getHours();
+  if (hr < 6) return "\u591C\u6DF1\u4E86";
+  if (hr < 9) return "\u65E9\u5B89";
+  if (hr < 12) return "\u4E0A\u5348\u597D";
+  if (hr < 14) return "\u4E2D\u5348\u597D";
+  if (hr < 18) return "\u4E0B\u5348\u597D";
+  if (hr < 22) return "\u665A\u4E0A\u597D";
+  return "\u591C\u6DF1\u4E86";
+}
+
+var monthNames = ["\u4E00\u6708","\u4E8C\u6708","\u4E09\u6708","\u56DB\u6708","\u4E94\u6708","\u516D\u6708","\u4E03\u6708","\u516B\u6708","\u4E5D\u6708","\u5341\u6708","\u5341\u4E00\u6708","\u5341\u4E8C\u6708"];
+
+function findFlower(name) {
+  for (var i = 0; i < flowerDB.length; i++) {
+    if (flowerDB[i].name === name) return flowerDB[i];
+  }
+  for (var i = 0; i < flowerDB.length; i++) {
+    if (name.indexOf(flowerDB[i].name) >= 0) return flowerDB[i];
+  }
+  return null;
+}
+
+// ========== ONBOARDING ==========
+function renderOnboard() {
+  var c = Q("#onboard-content");
+  if (!c) return;
+
+  if (S.step === 0) {
+    c.innerHTML = '<div class="anim-float" style="font-size:72px;margin-bottom:16px">\uD83C\uDF3F</div>' +
+      '<h1 style="font-size:36px;font-weight:700;color:#2B4A37;letter-spacing:8px;margin-bottom:12px">\u8D70\u82B1\u8DEF</h1>' +
+      '<p style="color:#5A6B5F;font-size:14px;letter-spacing:3px;margin-bottom:6px">WALK THE FLOWER PATH</p>' +
+      '<p style="color:#8A9A8E;font-size:13px;margin-top:8px">\u4E0E\u82B1\u4E3A\u4F34 \u00B7 \u8BC6\u82B1\u61C2\u82B1 \u00B7 \u4E00\u8DEF\u751F\u82B1</p>' +
+      '<div style="margin-top:48px"><button class="btn btn-p" style="padding:16px 48px;font-size:16px" onclick="S.step=1;renderOnboard()">\u5F00\u59CB\u6211\u7684\u82B1\u8DEF</button></div>' +
+      '<p style="color:#8A9A8E;font-size:11px;margin-top:32px;opacity:0.6">\u4E00\u6735\u82B1\u7684\u65C5\u7A0B\uFF0C\u4ECE\u4F60\u7684\u540D\u5B57\u5F00\u59CB</p>';
+
+  } else if (S.step === 1) {
+    c.innerHTML = '<div style="width:100%;max-width:320px;text-align:center">' +
+      '<p style="font-size:13px;color:#8A9A8E;letter-spacing:4px;margin-bottom:12px">\u7B2C\u4E00\u6B65</p>' +
+      '<h2 style="font-size:24px;font-weight:700;color:#2B4A37;margin-bottom:8px">\u4F60\u53EB\u4EC0\u4E48\u540D\u5B57\uFF1F</h2>' +
+      '<p style="color:#5A6B5F;font-size:14px;margin-bottom:36px">\u7ED9\u81EA\u5DF1\u53D6\u4E00\u4E2A\u82B1\u8DEF\u4E0A\u7684\u6635\u79F0\u5427</p>' +
+      '<input class="inp" id="name-input" placeholder="\u8F93\u5165\u4F60\u7684\u540D\u5B57" maxlength="12" style="text-align:center;font-size:20px;font-weight:600;margin-bottom:28px">' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center;padding:16px" onclick="onNameSubmit()">\u4E0B\u4E00\u6B65 \u2192</button></div>';
+    setTimeout(function() { var inp = Q("#name-input"); if (inp) inp.focus(); }, 100);
+
+  } else if (S.step === 2) {
+    var html = '<div style="width:100%;max-width:320px;text-align:center">' +
+      '<p style="font-size:13px;color:#8A9A8E;letter-spacing:4px;margin-bottom:12px">\u7B2C\u4E8C\u6B65</p>' +
+      '<h2 style="font-size:24px;font-weight:700;color:#2B4A37;margin-bottom:8px">\u9009\u62E9\u4F60\u7684\u7075\u5BA0</h2>' +
+      '<p style="color:#5A6B5F;font-size:14px">\u9009\u4E00\u682A\u4E0E\u4F60\u7075\u9B42\u76F8\u5951\u7684\u690D\u7269</p>' +
+      '<div class="plant-grid">';
+    for (var i = 0; i < spiritPlants.length; i++) {
+      var p = spiritPlants[i];
+      html += '<div class="plant-opt" onclick="selectPlant(' + i + ')">' +
+        '<div class="emoji">' + p.emoji + '</div>' +
+        '<div class="pname">' + esc(p.name) + '</div>' +
+        '<div class="pdesc">' + esc(p.trait) + '</div></div>';
+    }
+    html += '</div></div>';
+    c.innerHTML = html;
+  }
+}
+
+function onNameSubmit() {
+  var inp = Q("#name-input");
+  if (inp && inp.value.trim()) {
+    S.name = inp.value.trim();
+    S.step = 2;
+    renderOnboard();
+  }
+}
+
+function selectPlant(idx) {
+  S.plant = spiritPlants[idx];
+  var opts = QA(".plant-opt");
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove("sel");
+  opts[idx].classList.add("sel");
+  setTimeout(enterApp, 300);
+}
+
+function enterApp() {
+  Q("#scr-onboard").classList.remove("active");
+  Q("#scr-main").classList.add("active");
+  renderNav();
+  switchTab(S.tab || "home");
+  checkApiConfig();
+  saveState();
+}
+
+// ========== NAV ==========
+function renderNav() {
+  var nav = Q("#bottom-nav");
+  if (!nav) return;
+  var tabs = [
+    {id:"home",icon:"\uD83C\uDFE0",label:"\u9996\u9875"},
+    {id:"identify",icon:"\uD83D\uDCF7",label:"\u8BC6\u82B1"},
+    {id:"gift",icon:"\uD83D\uDC90",label:"\u82B1\u8BED"},
+    {id:"encyclopedia",icon:"\uD83D\uDCD6",label:"\u767E\u79D1"},
+    {id:"fortune",icon:"\uD83D\uDD2E",label:"\u82B1\u7B7E"}
+  ];
+  var html = "";
+  for (var i = 0; i < tabs.length; i++) {
+    var t = tabs[i];
+    var cls = S.tab === t.id ? " active" : "";
+    html += '<button class="nav-btn' + cls + '" onclick="switchTab(\'' + t.id + '\')">' +
+      '<span class="nav-ico">' + t.icon + '</span><span>' + t.label + '</span></button>';
+  }
+  nav.innerHTML = html;
+}
+
+function switchTab(id) {
+  S.tab = id;
+  var panels = QA(".tab-panel");
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].style.display = (panels[i].id === "tab-" + id) ? "" : "none";
+  }
+  renderNav();
+  if (id === "home") renderHome();
+  else if (id === "identify") renderIdentify();
+  else if (id === "gift") renderGift();
+  else if (id === "encyclopedia") renderEncyclopedia();
+  else if (id === "fortune") renderFortune();
+  saveState();
+}
+
+// ========== HOME ==========
+function renderHome() {
+  var el = Q("#tab-home");
+  if (!el) return;
+  var html = '<div class="home-header">' +
+    '<p style="font-size:13px;color:#8A9A8E;letter-spacing:2px">' + greeting() + "\uFF0C" + esc(S.name) + '</p>' +
+    '<h1 style="font-size:24px;font-weight:700;margin-top:4px">\u4ECA\u5929\u60F3\u63A2\u7D22\u4EC0\u4E48\uFF1F</h1></div>';
+
+  html += '<div class="home-grid">';
+  var cards = [
+    {emoji:"\uD83D\uDCF7",title:"\u8DEF\u8FB9\u8BC6\u82B1",desc:"\u62CD\u7167\u8BC6\u522B\u8EAB\u8FB9\u7684\u82B1",tab:"identify",bg:"#E8F5E9"},
+    {emoji:"\uD83D\uDC90",title:"\u82B1\u8BED\u793C\u8D60",desc:"\u9001\u82B1\u573A\u666F\u63A8\u8350",tab:"gift",bg:"#FFF3E0"},
+    {emoji:"\uD83C\uDF31",title:"\u79CD\u82B1\u767E\u79D1",desc:"\u517B\u62A4\u77E5\u8BC6\u5927\u5168",tab:"encyclopedia",bg:"#E3F2FD"},
+    {emoji:"\uD83D\uDD2E",title:"\u4ECA\u65E5\u82B1\u7B7E",desc:"\u62BD\u4E00\u652F\u5E78\u8FD0\u7B7E",tab:"fortune",bg:"#F3E5F5"}
+  ];
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    html += '<div class="home-card" onclick="switchTab(\'' + c.tab + '\')" style="background:' + c.bg + '">' +
+      '<div style="font-size:28px;margin-bottom:8px">' + c.emoji + '</div>' +
+      '<div style="font-size:15px;font-weight:700">' + c.title + '</div>' +
+      '<div style="font-size:12px;color:#5A6B5F;margin-top:4px">' + c.desc + '</div></div>';
+  }
+  html += '</div>';
+
+  // Spirit plant card
+  if (S.plant) {
+    html += '<div style="margin:0 20px 16px;padding:16px;border-radius:16px;background:linear-gradient(135deg,var(--parchment),var(--cream));border:1px solid var(--border)">' +
+      '<p style="font-size:11px;color:var(--gold);font-weight:600;letter-spacing:2px;margin-bottom:8px">\u6211\u7684\u7075\u5BA0</p>' +
+      '<div style="display:flex;align-items:center;gap:12px">' +
+      '<span style="font-size:36px">' + S.plant.emoji + '</span>' +
+      '<div><div style="font-size:16px;font-weight:700">' + esc(S.plant.name) + '</div>' +
+      '<div style="font-size:12px;color:var(--text2);margin-top:2px">' + esc(S.plant.desc) + '</div></div></div></div>';
+  }
+
+  // Daily fortune
+  html += '<div style="margin:0 20px 16px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#FFF8E1,var(--cream));border:1px solid #E2D1A0;cursor:pointer" onclick="switchTab(\'fortune\')">' +
+    '<p style="font-size:10px;color:var(--gold);font-weight:600;letter-spacing:2px;margin-bottom:8px">\u4ECA\u65E5\u82B1\u7B7E</p>' +
+    '<div style="display:flex;align-items:center;gap:10px">' +
+    '<span style="font-size:28px">' + S.dailyFortune.emoji + '</span>' +
+    '<div style="font-size:13px;line-height:1.5">' + esc(S.dailyFortune.text.substring(0, 40)) + '...</div></div></div>';
+
+  // Month flower
+  var curMon = new Date().getMonth();
+  var mf = monthFlowers[curMon];
+  html += '<div style="margin:0 20px 20px;padding:14px;border-radius:16px;border:1px solid var(--border);background:var(--card)">' +
+    '<p style="font-size:11px;color:var(--sage);font-weight:600;letter-spacing:2px;margin-bottom:6px">\u5F53\u6708\u82B1\u4E8B ' + esc(mf.month) + '</p>' +
+    '<div style="display:flex;align-items:center;gap:10px">' +
+    '<span style="font-size:32px">' + mf.emoji + '</span>' +
+    '<div><div style="font-size:15px;font-weight:700">' + esc(mf.flower) + '</div>' +
+    '<div style="font-size:12px;color:var(--text2);margin-top:2px">' + esc(mf.tip) + '</div></div></div></div>';
+
+  // Logout button
+  html += '<div style="text-align:center;padding:8px 20px 32px">' +
+    '<span onclick="doLogout()" style="font-size:12px;color:#B8A898;cursor:pointer;letter-spacing:1px">\u91CD\u65B0\u9009\u62E9\u7075\u5BA0</span></div>';
+
+  el.innerHTML = html;
+}
+
+// ========== IDENTIFY ==========
+function renderIdentify() {
+  var el = Q("#tab-identify");
+  if (!el) return;
+  var html = '<div class="id-header"><h2>\uD83D\uDCF7 \u8DEF\u8FB9\u8BC6\u82B1</h2>' +
+    '<button class="settings-btn" onclick="showSettings()">\u2699\uFE0F</button></div>';
+
+  // Privacy notice
+  html += '<div class="warn-bar warn-green">\uD83D\uDD12 \u8BC6\u82B1\u529F\u80FD\u4EC5\u5C06\u60A8\u62CD\u6444\u7684\u7167\u7247\u53D1\u9001\u81F3\u767E\u5EA6AI\u690D\u7269\u8BC6\u522B\u63A5\u53E3\uFF0C\u4E0D\u4F1A\u8BBF\u95EE\u60A8\u7684\u76F8\u518C\u6216\u4E91\u7AEF\u6570\u636E</div>';
+
+  // API config warning
+  if (!S.apiOk) {
+    html += '<div class="warn-bar warn-yellow">\u26A0\uFE0F API\u5C1A\u672A\u914D\u7F6E\uFF0C\u70B9\u51FB\u53F3\u4E0A\u89D2\u2699\uFE0F\u8BBE\u7F6E\u767E\u5EA6AI\u5BC6\u94A5\uFF08\u5DF2\u9884\u914D\u7F6E\uFF09</div>';
+  }
+
+  // Camera area
+  if (S.photoUrl) {
+    html += '<div class="cam-area"><img src="' + S.photoUrl + '" alt="photo">';
+    if (S.busy) {
+      html += '<div class="loading-overlay"><div class="spinner">\uD83C\uDF31</div><div class="ltxt">\u8BC6\u522B\u4E2D...</div></div>';
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="cam-area"><div class="cam-placeholder"><div class="ico">\uD83D\uDCF7</div>' +
+      '<p>\u62CD\u4E00\u5F20\u82B1\u8349\u7167\u7247</p>' +
+      '<p style="font-size:12px;margin-top:4px">\u6216\u4ECE\u76F8\u518C\u9009\u62E9</p></div>' +
+      '<div class="scan-line"></div></div>';
+  }
+
+  // Camera actions
+  html += '<div class="cam-actions">' +
+    '<button class="cam-btn primary" onclick="document.getElementById(\'file-input\').click()">\uD83D\uDCF7 \u62CD\u7167/\u9009\u56FE</button>';
+  if (S.photo) {
+    html += '<button class="cam-btn" onclick="doIdentify()">\uD83D\uDD0D \u5F00\u59CB\u8BC6\u522B</button>';
+  }
+  if (S.photoUrl) {
+    html += '<button class="cam-btn" onclick="clearPhoto()">\u2716 \u6E05\u9664</button>';
+  }
+  html += '</div>';
+
+  // API Result
+  if (S.apiErr) {
+    html += '<div style="margin:0 20px;padding:14px;border-radius:14px;background:#FFF3E0;color:#E65100;font-size:13px">\u274C ' + esc(S.apiErr) + '</div>';
+  }
+  if (S.apiRes) {
+    var r = S.apiRes;
+    var fl = findFlower(r.name);
+    var score = r.score ? (r.score * 100).toFixed(1) : "?";
+    html += '<div class="result-card">';
+    html += '<div class="result-name">' + (fl ? fl.emoji : "\uD83C\uDF31") + ' ' + esc(r.name) +
+      ' <span class="result-score">' + score + '%</span></div>';
+    if (r.latin) html += '<div style="font-size:12px;color:var(--text3);font-style:italic;margin-top:2px">' + esc(r.latin) + '</div>';
+    if (fl) {
+      html += '<div style="font-size:13px;color:var(--text2);margin-top:8px;line-height:1.5">' + esc(fl.desc) + '</div>';
+      html += '<div class="result-grid">';
+      html += '<div class="result-item"><div class="label">\u82B1\u8BED</div>' + esc(fl.lang) + '</div>';
+      html += '<div class="result-item"><div class="label">\u82B1\u671F</div>' + esc(fl.season) + '</div>';
+      html += '<div class="result-item"><div class="label">\u6D47\u6C34</div>' + esc(fl.water) + '</div>';
+      html += '<div class="result-item"><div class="label">\u5149\u7167</div>' + esc(fl.light) + '</div>';
+      html += '</div>';
+      if (fl.fact) html += '<div class="result-fact">\uD83D\uDCA1 ' + esc(fl.fact) + '</div>';
+    } else {
+      html += '<div style="font-size:13px;color:var(--text2);margin-top:8px">\u767E\u5EA6AI\u8BC6\u522B\u7ED3\u679C\uFF0C\u672A\u5728\u672C\u5730\u82B1\u5E93\u4E2D\u627E\u5230\u8BE6\u7EC6\u4FE1\u606F</div>';
+    }
+    html += '</div>';
+  }
+
+  // Quick flowers
+  if (!S.photoUrl) {
+    html += '<div class="sec-title">\u5FEB\u901F\u67E5\u770B</div><div class="quick-flowers">';
+    for (var i = 0; i < Math.min(flowerDB.length, 10); i++) {
+      html += '<div class="quick-chip" onclick="showFlowerInfo(' + i + ')">' + flowerDB[i].emoji + ' ' + esc(flowerDB[i].name) + '</div>';
+    }
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function clearPhoto() {
+  S.photo = null;
+  S.photoUrl = null;
+  S.apiRes = null;
+  S.apiErr = null;
+  renderIdentify();
+}
+
+function showFlowerInfo(idx) {
+  var fl = flowerDB[idx];
+  alert(fl.emoji + " " + fl.name + "\n" + fl.latin + "\n\n" + fl.desc + "\n\n\u82B1\u8BED: " + fl.lang + "\n\u82B1\u671F: " + fl.season + "\n\u6D47\u6C34: " + fl.water + "\n\u5149\u7167: " + fl.light + "\n\n\uD83D\uDCA1 " + fl.fact);
+}
+
+function doIdentify() {
+  if (!S.photo || S.busy) return;
+  S.busy = true;
+  S.apiRes = null;
+  S.apiErr = null;
+  renderIdentify();
+  fetch(API_BASE + "/api/identify", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({image: S.photo})
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    S.busy = false;
+    if (data.error) {
+      S.apiErr = data.error;
+    } else if (data.result && data.result.length > 0) {
+      var top = data.result[0];
+      S.apiRes = {name: top.name, score: top.score, latin: ""};
+      if (top.baike_info && top.baike_info.description) {
+        S.apiRes.desc = top.baike_info.description;
+      }
+    } else {
+      S.apiErr = "\u672A\u8BC6\u522B\u51FA\u690D\u7269\uFF0C\u8BF7\u62CD\u6E05\u6670\u7684\u82B1\u6735\u7167\u7247";
+    }
+    renderIdentify();
+  }).catch(function(e) {
+    S.busy = false;
+    S.apiErr = "\u7F51\u7EDC\u9519\u8BEF: " + e.message;
+    renderIdentify();
+  });
+}
+
+function checkApiConfig() {
+  try {
+    fetch(API_BASE + "/api/config").then(function(r) { return r.json(); }).then(function(d) {
+      S.apiOk = d.configured;
+      if (S.tab === "identify") renderIdentify();
+    }).catch(function() {});
+  } catch(e) {}
+}
+
+function showSettings() {
+  var root = Q("#modal-root");
+  root.innerHTML = '<div class="modal-bg" onclick="if(event.target===this)closeModal()">' +
+    '<div class="modal-box"><h3>\u2699\uFE0F API\u914D\u7F6E</h3>' +
+    '<p style="font-size:12px;color:var(--text2);margin-bottom:12px">\u767E\u5EA6AI\u690D\u7269\u8BC6\u522B\u63A5\u53E3\u5BC6\u94A5\uFF08\u5DF2\u9884\u914D\u7F6E\uFF09</p>' +
+    '<div class="field"><div class="flabel">API Key</div><input class="inp" id="cfg-key" placeholder="API Key"></div>' +
+    '<div class="field"><div class="flabel">Secret Key</div><input class="inp" id="cfg-secret" placeholder="Secret Key"></div>' +
+    '<div class="factions"><button class="btn" style="background:var(--border);color:var(--ink)" onclick="closeModal()">\u53D6\u6D88</button>' +
+    '<button class="btn btn-p" onclick="saveConfig()">\u4FDD\u5B58</button></div></div></div>';
+}
+
+function closeModal() { Q("#modal-root").innerHTML = ""; }
+
+function saveConfig() {
+  var k = Q("#cfg-key").value.trim();
+  var s = Q("#cfg-secret").value.trim();
+  if (!k || !s) return;
+  fetch(API_BASE + "/api/config", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({apiKey: k, secretKey: s})
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    S.apiOk = d.configured;
+    closeModal();
+    renderIdentify();
+  });
+}
+
+// ========== GIFT ==========
+function selectGift(id) {
+  S.giftId = id;
+  S.giftStep = 1;
+  S.giftForm = {scene:id, who:null, color:null, colorCustom:null, flowers:[]};
+  S.giftResults = null;
+  renderGift();
+}
+function giftBack() {
+  if (S.giftResults) { S.giftResults = null; renderGift(); return; }
+  S.giftId = null; S.giftStep = 0; S.giftForm = null; renderGift();
+}
+function giftSet(field, val) {
+  var f = S.giftForm;
+  if (field === "who") { f.who = val; }
+  else if (field === "color") {
+    f.color = val; f.colorCustom = null;
+    for (var i = 0; i < giftColorPresets.length; i++) { if (giftColorPresets[i].n === val) { f.colorHex = giftColorPresets[i].h; break; } }
+  }
+  else if (field === "colorCustom") { f.colorCustom = val; f.color = val; }
+  else if (field === "flower") {
+    var idx = f.flowers.indexOf(val);
+    if (idx >= 0) f.flowers.splice(idx, 1); else f.flowers.push(val);
+  }
+  renderGift();
+}
+function giftNext() {
+  S.giftResults = giftRec(S.giftId, S.giftForm); renderGift();
+}
+function giftReset() { S.giftId = null; S.giftStep = 0; S.giftForm = null; S.giftResults = null; renderGift(); }
+
+function renderGift() {
+  var el = Q("#tab-gift");
+  if (!el) return;
+
+  // === Scene selection ===
+  if (!S.giftId) {
+    var html = '<div style="padding:calc(14px + var(--safe-top)) 20px 10px"><h2 style="font-size:20px;font-weight:700">\uD83D\uDC90 \u82B1\u8BED\u793C\u8D60</h2>' +
+      '<p style="font-size:13px;color:var(--text2);margin-top:4px">\u9009\u62E9\u9001\u82B1\u573A\u666F\uFF0C\u667A\u80FD\u63A8\u8350\u82B1\u675F</p></div>';
+    html += '<div class="gift-grid">';
+    for (var i = 0; i < giftScenes.length; i++) {
+      var g = giftScenes[i];
+      html += '<div class="gift-card" onclick="selectGift(\'' + g.id + '\')">' +
+        '<div class="emoji">' + g.emoji + '</div><div class="gname">' + esc(g.name) + '</div></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // === Results ===
+  if (S.giftResults) {
+    var html = '<button class="gift-back" onclick="giftBack()">\u2190 \u8FD4\u56DE\u8C03\u6574</button>';
+    var sceneName = "";
+    for (var si = 0; si < giftScenes.length; si++) { if (giftScenes[si].id === S.giftId) { sceneName = giftScenes[si].name; break; } }
+    html += '<div style="padding:0 20px 12px"><h3 style="font-size:18px;font-weight:700">' + sceneName + ' \u00B7 \u63A8\u8350\u82B1\u675F</h3>';
+    html += '<div class="gf-summary">';
+    var f = S.giftForm;
+    for (var wi = 0; wi < GF_WHO.length; wi++) { if (GF_WHO[wi].id === f.who) { html += '<span class="tg">\uD83D\uDC64 ' + GF_WHO[wi].n + '</span>'; break; } }
+    if (f.color) html += '<span class="tg">\uD83C\uDFA8 ' + esc(f.color) + '</span>';
+    if (f.flowers && f.flowers.length) html += '<span class="tg">\uD83C\uDF38 ' + esc(f.flowers.join("\u3001")) + '</span>';
+    html += '</div></div>';
+
+    for (var ri = 0; ri < S.giftResults.length; ri++) {
+      var r = S.giftResults[ri];
+      html += '<div class="gr-card">';
+      html += '<img class="gr-img" src="' + r.img + '" alt="' + esc(r.name) + '" loading="lazy">';
+      html += '<div class="gr-overlay">';
+      html += '<div class="gr-match-badge">' + r.match + '% \u5339\u914D</div>';
+      html += '<div style="background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border-radius:16px;padding:16px;margin-top:12px">';
+      html += '<div style="font-size:18px;font-weight:700;color:var(--forest)">' + esc(r.name) + '</div>';
+      html += '<div style="font-size:12px;color:var(--text2);margin-top:2px">' + esc(r.flowers.join(" \u00B7 ")) + '</div>';
+      html += '</div></div>';
+      html += '<div class="gr-body">';
+      html += '<div class="gr-lang">\u201C' + esc(r.lang) + '\u201D</div>';
+      html += '<div class="gr-bless">\uD83D\uDCDD ' + esc(r.bless) + '</div>';
+      html += '<div class="gr-meta">';
+      html += '<span class="gr-tag">\uD83D\uDCB0 ' + r.price + '\u5143</span>';
+      html += '<span class="gr-tag">\uD83C\uDF38 ' + r.stems + '\u652F/' + r.flowers.length + '\u79CD\u82B1\u6750</span>';
+      html += '</div></div></div>';
+    }
+
+    html += '<div style="text-align:center;padding:8px 20px 32px">' +
+      '<span onclick="giftReset()" style="font-size:12px;color:var(--text3);cursor:pointer;letter-spacing:1px">\u91CD\u65B0\u9009\u62E9\u573A\u666F</span></div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // === Single-page Form ===
+  var f = S.giftForm;
+  var html = '<button class="gift-back" onclick="giftBack()">\u2190 \u8FD4\u56DE\u573A\u666F</button>';
+  html += '<div style="padding:8px 20px 0"><h3 style="font-size:16px;margin:0 0 16px">\u5B9A\u5236\u4F60\u7684\u82B1\u675F</h3>';
+
+  // Section 1: Who (required)
+  html += '<div style="margin-bottom:20px"><p class="gf-sub" style="margin-bottom:8px">\u9001\u7ED9\u8C01\uFF08\u53EF\u9009\uFF09</p><div class="gf-chips">';
+  for (var wi = 0; wi < GF_WHO.length; wi++) {
+    var w = GF_WHO[wi];
+    html += '<div class="gf-chip' + (f.who === w.id ? ' sel' : '') + '" onclick="giftSet(\'who\',\'' + w.id + '\')">' + esc(w.n) + '</div>';
+  }
+  html += '</div></div>';
+
+  // Section 2: Color preference (optional)
+  html += '<div style="margin-bottom:20px"><p class="gf-sub" style="margin-bottom:8px">\u989C\u8272\u504F\u597D\uFF08\u53EF\u9009\uFF09</p>';
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">';
+  for (var ci = 0; ci < giftColorPresets.length; ci++) {
+    var cp = giftColorPresets[ci];
+    var isSel = f.color === cp.n;
+    if (cp.h === "rainbow") {
+      html += '<div class="color-dot' + (isSel ? ' sel' : '') + '" onclick="giftSet(\'color\',\'' + cp.n + '\')" style="background:conic-gradient(#E74C3C,#F39C12,#F1C40F,#2ECC71,#3498DB,#9B59B6,#E74C3C);border-radius:50%"></div>';
+    } else {
+      html += '<div class="color-dot' + (isSel ? ' sel' : '') + '" onclick="giftSet(\'color\',\'' + cp.n + '\')" style="background:' + cp.h + '"></div>';
+    }
+  }
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px;align-items:center"><input class="inp" id="color-custom" placeholder="\u81EA\u5B9A\u4E49\u989C\u8272" value="' + esc(f.colorCustom || "") + '" style="flex:1;font-size:13px">';
+  html += '<button class="btn btn-p" style="padding:10px 14px;font-size:12px" onclick="giftSet(\'colorCustom\',Q(\'#color-custom\').value)">\u786E\u5B9A</button></div>';
+  html += '</div>';
+
+  // Section 3: Flower preference (optional, multi-select)
+  html += '<div style="margin-bottom:20px"><p class="gf-sub" style="margin-bottom:8px">\u82B1\u6750\u504F\u597D\uFF08\u53EF\u9009\uFF0C\u591A\u9009\uFF09</p><div class="gf-chips">';
+  for (var fi = 0; fi < GF_FLOWER_OPTS.length; fi++) {
+    var fo = GF_FLOWER_OPTS[fi];
+    var isFlowerSel = f.flowers && f.flowers.indexOf(fo.n) >= 0;
+    html += '<div class="gf-chip' + (isFlowerSel ? ' sel' : '') + '" onclick="giftSet(\'flower\',\'' + fo.n + '\')">' + esc(fo.n) + '</div>';
+  }
+  html += '</div></div>';
+
+  html += '</div>';
+
+  // Generate button
+  html += '<div style="padding:0 20px 24px">';
+  html += '<button class="btn btn-p" style="width:100%;padding:14px;font-size:15px" onclick="giftNext()">\u751F\u6210\u63A8\u8350 \u2728</button>';
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+// ========== ENCYCLOPEDIA ==========
+var ENC_CATS = [
+  {id:"all",name:"全部"},{id:"foliage",name:"观叶"},{id:"flowering",name:"开花"},
+  {id:"succulent",name:"多肉"},{id:"herb",name:"香草"},{id:"vine",name:"藤本"},
+  {id:"tree",name:"乔灌"},{id:"bulb",name:"球根"},{id:"aquatic",name:"水生"}
+];
+var CAT_EMOJI = {foliage:"🌿",flowering:"🌺",succulent:"🪴",herb:"🌱",vine:"🌾",tree:"🌳",bulb:"🌷",aquatic:"💧"};
+var CAT_BG = {foliage:"linear-gradient(135deg,#E8F5E9,#C8E6C9)",flowering:"linear-gradient(135deg,#FCE4EC,#F8BBD0)",succulent:"linear-gradient(135deg,#FFF3E0,#FFE0B2)",herb:"linear-gradient(135deg,#E0F2F1,#B2DFDB)",vine:"linear-gradient(135deg,#E8EAF6,#C5CAE9)",tree:"linear-gradient(135deg,#EFEBE9,#D7CCC8)",bulb:"linear-gradient(135deg,#F3E5F5,#CE93D8)",aquatic:"linear-gradient(135deg,#E1F5FE,#B3E5FC)"};
+
+function imgFb(el, cat) {
+  var em = CAT_EMOJI[cat] || "🌱";
+  var bg = CAT_BG[cat] || CAT_BG.foliage;
+  var d = document.createElement("div");
+  d.className = "enc-img-fb";
+  d.style.background = bg;
+  d.textContent = em;
+  if (el && el.parentNode) el.parentNode.replaceChild(d, el);
+}
+
+function heroFb(el, cat) {
+  var em = CAT_EMOJI[cat] || "🌱";
+  var bg = CAT_BG[cat] || CAT_BG.foliage;
+  var d = document.createElement("div");
+  d.className = "hero-fb";
+  d.style.background = bg;
+  d.textContent = em;
+  if (el && el.parentNode) el.parentNode.replaceChild(d, el);
+}
+
+function encImgHtml(imgUrl, cat) {
+  var bg = CAT_BG[cat] || CAT_BG.foliage;
+  var em = CAT_EMOJI[cat] || "🌱";
+  if (imgUrl) {
+    return '<img class="enc-img" src="' + esc(imgUrl) + '" data-cat="' + cat + '" onerror="imgFb(this,this.dataset.cat)">';
+  }
+  return '<div class="enc-img-fb" style="background:' + bg + '">' + em + '</div>';
+}
+
+function encSearchFn(q) {
+  q = (q || "").trim().toLowerCase();
+  if (!q) { S.encSearchResults = null; S.encSearch = ""; renderEncyclopedia(); return; }
+  S.encSearch = q;
+  var results = [];
+  var seen = {};
+  for (var i = 0; i < encData.length; i++) {
+    var p = encData[i];
+    if (p.n.toLowerCase().indexOf(q) >= 0 || (p.fl && p.fl.toLowerCase().indexOf(q) >= 0) || p.ds.toLowerCase().indexOf(q) >= 0) {
+      results.push({type:"detail", idx:i, name:p.n, cat:p.c, diff:p.d, desc:p.ds, img:p.img, fl:p.fl});
+      seen[p.n] = 1;
+    }
+  }
+  for (var j = 0; j < encIndex.length; j++) {
+    var e = encIndex[j];
+    if (!seen[e[0]] && e[0].toLowerCase().indexOf(q) >= 0) {
+      results.push({type:"basic", idx:j, name:e[0], cat:e[1], diff:e[2], desc:e[3], img:"", fl:""});
+      seen[e[0]] = 1;
+    }
+    if (results.length >= 50) break;
+  }
+  S.encSearchResults = results;
+  renderEncyclopedia();
+}
+
+function renderEncList(items) {
+  var html = "";
+  for (var i = 0; i < items.length; i++) {
+    var p = items[i];
+    var diffColor = p.diff === "\u5165\u95E8\u7EA7" ? "#4CAF50" : (p.diff === "\u4E2D\u7B49" ? "#FF9800" : "#F44336");
+    var onclick = p.type === "detail" ? "S.encPlant=" + p.idx + ";renderEncyclopedia()" : "";
+    html += '<div class="enc-item" onclick="' + onclick + '">';
+    html += encImgHtml(p.img, p.cat);
+    html += '<div class="info"><div class="ename">' + esc(p.name) + "</div>";
+    html += '<div class="edesc">' + esc(p.desc) + "</div>";
+    html += '<div class="ediff" style="color:' + diffColor + '">' + esc(p.diff) + "</div>";
+    if (p.fl) html += '<div class="efl">' + esc(p.fl) + "</div>";
+    html += "</div></div>";
+  }
+  return html;
+}
+
+function renderEncyclopedia() {
+  var el = Q("#tab-encyclopedia");
+  if (!el) return;
+
+  // Detail view
+  if (S.encPlant !== null) {
+    var p = encData[S.encPlant];
+    var c = p.care;
+    var html = '<button class="gift-back" onclick="S.encPlant=null;renderEncyclopedia()">\u2190 返回</button>';
+    html += '<div class="enc-detail">';
+    if (p.img) {
+      html += '<img class="hero-img" src="' + esc(p.img) + '" data-cat="' + p.c + '" onerror="heroFb(this,this.dataset.cat)">';
+    } else {
+      html += '<div class="hero-fb" style="background:' + (CAT_BG[p.c]||CAT_BG.foliage) + '">' + (CAT_EMOJI[p.c]||"🌱") + "</div>";
+    }
+    html += '<div class="dname">' + esc(p.n) + "</div>";
+    if (p.fl) html += '<div class="dfl">\u2740 ' + esc(p.fl) + "</div>";
+    html += '<div style="text-align:center;font-size:12px;color:var(--text2);margin-bottom:12px">' + esc(p.ds) + "</div>";
+    html += '<div class="care-grid">';
+    html += '<div class="care-item"><div class="clabel">\uD83D\uDCA7 浇水</div><div class="cval">' + esc(c.w) + "</div></div>";
+    html += '<div class="care-item"><div class="clabel">\uD83E\uDDF4 施肥</div><div class="cval">' + esc(c.f) + "</div></div>";
+    html += '<div class="care-item"><div class="clabel">\u2702\uFE0F 修剪</div><div class="cval">' + esc(c.pr) + "</div></div>";
+    html += '<div class="care-item"><div class="clabel">\uD83D\uDD04 换盆</div><div class="cval">' + esc(c.rp) + "</div></div>";
+    html += "</div>";
+    if (c.bl) {
+      html += '<div class="care-section"><div class="cs-title">\uD83C\uDF3A 促花技巧</div><div class="cs-val">' + esc(c.bl) + "</div></div>";
+    }
+    html += '<div class="care-section"><div class="cs-title">\u26A0\uFE0F 注意事项</div><div class="cs-val">' + esc(c.no) + "</div></div>";
+    html += '<div class="region-box"><div class="cs-title">\uD83C\uDF0D 地区差异</div><div class="cs-val">' + esc(c.rg) + "</div></div>";
+    html += "</div>";
+    el.innerHTML = html;
+    el.scrollTop = 0;
+    return;
+  }
+
+  // Search results view
+  var headerHtml = '<div style="padding:calc(14px + var(--safe-top)) 20px 10px"><h2 style="font-size:20px;font-weight:700">\uD83C\uDF31 种花百科</h2>';
+  headerHtml += '<p style="font-size:13px;color:var(--text2);margin-top:4px">' + encData.length + "种详细攻略 \u00B7 " + encIndex.length + "种植物库</p></div>";
+
+  var searchHtml = '<div class="enc-search-wrap"><div class="enc-search">';
+  searchHtml += '<input type="text" id="enc-si" placeholder="搜索植物名称或花语..." value="' + esc(S.encSearch) + '" oninput="encSearchFn(this.value)">';
+  if (S.encSearch) {
+    searchHtml += '<button style="border:none;background:none;font-size:18px;cursor:pointer;padding:4px;color:var(--text2)" onclick="S.encSearch=\'\';S.encSearchResults=null;renderEncyclopedia()">\u2715</button>';
+  }
+  searchHtml += "</div></div>";
+
+  if (S.encSearchResults) {
+    var html = headerHtml + searchHtml;
+    html += '<div class="enc-list">';
+    if (S.encSearchResults.length > 0) {
+      html += '<div style="padding:4px 0 8px;font-size:12px;color:var(--text2)">找到 ' + S.encSearchResults.length + " 个结果</div>";
+      html += renderEncList(S.encSearchResults);
+    } else {
+      html += '<div class="enc-no-result">未找到相关植物，试试其他关键词</div>';
+    }
+    html += "</div>";
+    el.innerHTML = html;
+    return;
+  }
+
+  // Normal browse view
+  var html = headerHtml + searchHtml;
+
+  // Category chips
+  html += '<div class="enc-cats">';
+  for (var ci = 0; ci < ENC_CATS.length; ci++) {
+    var cat = ENC_CATS[ci];
+    var cls = S.encCat === cat.id ? " active" : "";
+    html += '<button class="cat-chip' + cls + '" onclick="setEncCat(\'' + cat.id + '\')">' + (CAT_EMOJI[cat.id]||"📖") + " " + cat.name + "</button>";
+  }
+  html += '</div><div style="height:10px"></div><div class="enc-list">';
+
+  // Plant list
+  var count = 0;
+  for (var i = 0; i < encData.length; i++) {
+    var p = encData[i];
+    if (S.encCat !== "all" && p.c !== S.encCat) continue;
+    var diffColor = p.d === "\u5165\u95E8\u7EA7" ? "#4CAF50" : (p.d === "\u4E2D\u7B49" ? "#FF9800" : "#F44336");
+    html += '<div class="enc-item" onclick="S.encPlant=' + i + ';renderEncyclopedia()">';
+    html += encImgHtml(p.img, p.c);
+    html += '<div class="info"><div class="ename">' + esc(p.n) + "</div>";
+    html += '<div class="edesc">' + esc(p.ds) + "</div>";
+    html += '<div class="ediff" style="color:' + diffColor + '">' + esc(p.d) + "</div>";
+    if (p.fl) html += '<div class="efl">' + esc(p.fl) + "</div>";
+    html += "</div></div>";
+    count++;
+  }
+
+  if (count === 0) {
+    html += '<div class="enc-no-result">该分类暂无植物</div>';
+  }
+
+  html += "</div>";
+  el.innerHTML = html;
+}
+
+function setEncCat(cat) { S.encCat = cat; S.encSearchResults = null; S.encSearch = ""; renderEncyclopedia(); }
+
+
+
+// ========== FORTUNE ==========
+function renderFortune() {
+  var el = Q("#tab-fortune");
+  if (!el) return;
+  var html = '<div style="padding:calc(14px + var(--safe-top)) 20px 10px"><h2 style="font-size:20px;font-weight:700">\uD83D\uDD2E \u82B1\u7B7E</h2>' +
+    '<p style="font-size:13px;color:var(--text2);margin-top:4px">\u62BD\u4E00\u652F\u4ECA\u65E5\u82B1\u7B7E\uFF0C\u83B7\u53D6\u4F60\u7684\u5E78\u8FD0\u82B1\u8BED</p></div>';
+
+  // Daily card
+  html += '<div class="daily-card" onclick="showDailyFortune()">' +
+    '<div class="dlabel">\u4ECA\u65E5\u82B1\u7B7E</div>' +
+    '<div style="display:flex;align-items:center;gap:10px">' +
+    '<span style="font-size:32px">' + S.dailyFortune.emoji + '</span>' +
+    '<div class="dtext">' + esc(S.dailyFortune.text.substring(0, 50)) + '...</div></div></div>';
+
+  if (S.fortune !== null) {
+    var f = fortunes[S.fortune];
+    html += '<div class="fort-result"><div class="femoji">' + f.emoji + '</div>' +
+      '<div style="font-size:16px;font-weight:700;margin-bottom:8px">' + esc(f.flower) + '</div>' +
+      '<div class="ftext">' + esc(f.text) + '</div>' +
+      '<div class="flucky">\u2728 \u4ECA\u65E5\u5E78\u8FD0\u8272: ' + esc(f.lucky) + '</div>' +
+      '<div class="fadvice">\uD83C\uDF31 ' + esc(f.advice) + '</div>' +
+      '<button class="btn btn-g" style="margin-top:16px" onclick="S.fortune=null;renderFortune()">\u518D\u62BD\u4E00\u6B21</button></div>';
+  } else {
+    html += '<div class="fort-zone"><p style="color:var(--text3);font-size:13px;margin-bottom:16px">\u9009\u62E9\u4E00\u5F20\u82B1\u7B7E\u5361</p></div>';
+    html += '<div class="fort-deck">';
+    for (var i = 0; i < S.shuffled.length; i++) {
+      var f = S.shuffled[i];
+      html += '<div class="fort-card" onclick="drawFortune(' + fortunes.indexOf(f) + ')">' + f.emoji + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // Month strip
+  html += '<div class="sec-title">\u5341\u4E8C\u6708\u82B1\u4E8B</div><div class="month-strip">';
+  var curMon = new Date().getMonth();
+  for (var mi = 0; mi < monthFlowers.length; mi++) {
+    var mf = monthFlowers[mi];
+    var cls = mi === curMon ? " now" : "";
+    html += '<div class="month-chip' + cls + '"><div class="m">' + esc(mf.month) + '</div>' +
+      '<div class="e">' + mf.emoji + '</div><div class="f">' + esc(mf.flower) + '</div></div>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function drawFortune(idx) { S.fortune = idx; renderFortune(); }
+function showDailyFortune() {
+  S.fortune = dayIdx;
+  renderFortune();
+}
+
+// ========== INIT ==========
+// Check localStorage first — if saved, skip onboarding and go straight to app
+if (loadState()) {
+  Q("#scr-onboard").classList.remove("active");
+  Q("#scr-main").classList.add("active");
+  renderNav();
+  switchTab(S.tab || "home");
+  checkApiConfig();
+} else {
+  renderOnboard();
+}
+
+// Also set up file input listener
+document.addEventListener("DOMContentLoaded", function() {
+  var fi = Q("#file-input");
+  if (fi) {
+    fi.addEventListener("change", function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      S.photoUrl = URL.createObjectURL(file);
+      S.apiRes = null;
+      S.apiErr = null;
+      var reader = new FileReader();
+      reader.onload = function() {
+        S.photo = reader.result.split(",")[1];
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+      if (S.tab === "identify") renderIdentify();
+    });
+  }
+});
+
+// Fallback: if nothing rendered after 1 second, try again
+setTimeout(function() {
+  var mainVisible = Q("#scr-main") && Q("#scr-main").classList.contains("active");
+  var oc = document.getElementById("onboard-content");
+  if (!mainVisible && oc && oc.innerHTML.length === 0) {
+    try {
+      if (loadState()) {
+        Q("#scr-onboard").classList.remove("active");
+        Q("#scr-main").classList.add("active");
+        renderNav();
+        switchTab(S.tab || "home");
+        checkApiConfig();
+      } else {
+        renderOnboard();
+      }
+    } catch(e) {
+      oc.innerHTML = '<div style="padding:20px;color:#c00;font-size:12px">Init failed: ' + e.message + '</div>';
+    }
+  }
+}, 1000);
+
+// ========== SERVICE WORKER (PWA) ==========
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function() {});
+}
+</script>
+</body>
+</html>
