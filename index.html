@@ -72,6 +72,16 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',san
 .quick-flowers::-webkit-scrollbar{display:none}
 .quick-chip{flex-shrink:0;padding:8px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);font-size:13px;cursor:pointer;white-space:nowrap;transition:.2s}
 .quick-chip:active{transform:scale(.95)}
+.flower-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.flower-modal{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;max-height:75vh;overflow-y:auto;position:relative;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.flower-modal-close{position:absolute;top:12px;right:16px;font-size:20px;cursor:pointer;color:var(--text3);background:none;border:none;padding:4px}
+.flower-modal h3{font-size:20px;font-weight:700;margin-bottom:4px}
+.flower-modal .fm-latin{font-size:12px;color:var(--text3);margin-bottom:12px}
+.flower-modal .fm-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.flower-modal .fm-item{padding:10px;border-radius:12px;background:var(--parchment)}
+.flower-modal .fm-label{font-size:11px;color:var(--text3);margin-bottom:2px}
+.flower-modal .fm-fact{padding:12px;border-radius:14px;background:#FFF8E1;font-size:13px;line-height:1.6;margin-top:10px}
 .gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
 .gift-card{padding:16px;border-radius:16px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:.2s;text-align:center}
 .gift-card:active{transform:scale(.97)}
@@ -2217,7 +2227,7 @@ function renderIdentify() {
 
   // API config warning
   if (!S.apiOk) {
-    html += '<div class="warn-bar warn-yellow">\u26A0\uFE0F API\u5C1A\u672A\u914D\u7F6E\uFF0C\u70B9\u51FB\u53F3\u4E0A\u89D2\u2699\uFE0F\u8BBE\u7F6E\u767E\u5EA6AI\u5BC6\u94A5\uFF08\u5DF2\u9884\u914D\u7F6E\uFF09</div>';
+    html += '<div class="warn-bar warn-yellow">\u26A0\uFE0F \u8BC6\u82B1\u670D\u52A1\u8FDE\u63A5\u4E2D\uFF0C\u8BF7\u7A0D\u5019\u91CD\u8BD5\u3002\u5982\u6301\u7EED\u65E0\u6CD5\u4F7F\u7528\uFF0C\u8BF7\u70B9\u51FB\u53F3\u4E0A\u89D2\u2699\uFE0F\u914D\u7F6E</div>';
   }
 
   // Camera area
@@ -2294,7 +2304,21 @@ function clearPhoto() {
 
 function showFlowerInfo(idx) {
   var fl = flowerDB[idx];
-  alert(fl.emoji + " " + fl.name + "\n" + fl.latin + "\n\n" + fl.desc + "\n\n\u82B1\u8BED: " + fl.lang + "\n\u82B1\u671F: " + fl.season + "\n\u6D47\u6C34: " + fl.water + "\n\u5149\u7167: " + fl.light + "\n\n\uD83D\uDCA1 " + fl.fact);
+  var html = '<div class="flower-modal-overlay" onclick="if(event.target===this)this.remove()">' +
+    '<div class="flower-modal"><button class="flower-modal-close" onclick="this.closest(\'.flower-modal-overlay\').remove()">\u2715</button>' +
+    '<h3>' + fl.emoji + ' ' + esc(fl.name) + '</h3>' +
+    '<p class="fm-latin">' + esc(fl.latin || '') + '</p>' +
+    '<p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">' + esc(fl.desc) + '</p>' +
+    '<div class="fm-row">' +
+    (fl.fl ? '<div class="fm-item"><div class="fm-label">\u82B1\u8BED</div><div>' + esc(fl.fl) + '</div></div>' : '') +
+    (fl.season ? '<div class="fm-item"><div class="fm-label">\u82B1\u671F</div><div>' + esc(fl.season) + '</div></div>' : '') +
+    '</div><div class="fm-row">' +
+    (fl.water ? '<div class="fm-item"><div class="fm-label">\u6D47\u6C34</div><div>' + esc(fl.water) + '</div></div>' : '') +
+    (fl.light ? '<div class="fm-item"><div class="fm-label">\u5149\u7167</div><div>' + esc(fl.light) + '</div></div>' : '') +
+    '</div>' +
+    (fl.fact ? '<div class="fm-fact">\uD83D\uDCA1 <b>\u8DA3\u5473\u77E5\u8BC6\uFF1A</b>' + esc(fl.fact) + '</div>' : '') +
+    '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function doIdentify() {

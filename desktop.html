@@ -29,7 +29,8 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .sidebar-foot{padding:20px 28px;font-size:11px;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.08);line-height:1.6}
 
 .main-area{margin-left:var(--sidebar-w);flex:1;overflow-y:auto;position:relative}
-.tab-panel{padding:48px 56px 80px;max-width:1100px;margin:0 auto;width:100%}
+.screen{display:none;min-height:100%}
+.screen.active{display:block;padding:48px 56px 80px;max-width:1100px;margin:0 auto;width:100%}
 
 /* ONBOARD */
 .onboard-wrap{display:none;position:fixed;inset:0;z-index:200;background:var(--cream)}
@@ -90,6 +91,13 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .loading-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;border-radius:20px}
 .spinner{font-size:36px;animation:spin 2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.sec-title{font-size:14px;font-weight:600;color:var(--text2);margin-top:24px;margin-bottom:8px;letter-spacing:1px}
+.quick-flowers{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.quick-chip{padding:8px 16px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:13px;cursor:pointer;transition:.2s}
+.quick-chip:hover{background:var(--parchment)}
+.warn-bar{padding:12px 18px;border-radius:14px;font-size:13px;line-height:1.5;margin-bottom:16px}
+.warn-yellow{background:#FFF8E1;border:1px solid #FFD54F;color:#8D6E00}
+.warn-green{background:#E8F5E9;border:1px solid #A5D6A7;color:#2E7D32}
 
 /* GIFT */
 .gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -107,13 +115,15 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .color-dot{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s;flex-shrink:0}
 .color-dot.sel{border-color:var(--forest);box-shadow:0 0 0 3px rgba(43,74,55,.2)}
 .gr-card{border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-bottom:20px}
-.gr-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.gr-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#f0f0f0}
 .gr-body{padding:24px}
 .gr-name{font-size:20px;font-weight:700;margin-bottom:6px}
 .gr-flowers{font-size:13px;color:var(--text2);margin-bottom:12px}
 .gr-lang{font-size:14px;color:var(--plum);font-weight:600;margin-bottom:8px}
 .gr-bless{padding:14px 18px;border-radius:14px;background:var(--parchment);font-size:14px;line-height:1.6;margin-bottom:12px}
 .gr-meta{display:flex;gap:12px;font-size:12px;color:var(--text3)}
+.gr-overlay{position:relative}
+.gr-match-badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px}
 .tg{display:inline-block;padding:4px 12px;border-radius:20px;background:var(--parchment);font-size:12px;font-weight:500}
 
 /* ENCYCLOPEDIA */
@@ -139,9 +149,29 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .enc-cat-btn:hover{border-color:var(--forest-mid)}
 .enc-cat-btn.sel{background:var(--forest);color:#fff;border-color:var(--forest)}
 .fallback-img{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--parchment),var(--border))}
+/* Encyclopedia detail styles (used by mobile render shared in desktop) */
+.hero-img{width:100%;max-height:350px;object-fit:cover;border-radius:20px;margin-bottom:20px}
+.hero-fb{width:100%;height:200px;border-radius:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,var(--parchment),var(--border))}
+.dname{font-size:28px;font-weight:700}.dfl{font-size:14px;color:var(--plum);margin-bottom:20px}
+.care-item{padding:16px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:10px}
+.clabel{font-size:12px;color:var(--text3);margin-bottom:4px}
+.cval{font-size:14px;line-height:1.6}
+.care-section{margin-top:24px}.cs-title{font-size:16px;font-weight:700;margin-bottom:12px}
+.cs-val{font-size:14px;color:var(--text2);line-height:1.7}
+.region-box{margin-top:20px;padding:16px;border-radius:14px;background:#FFF8E1;font-size:13px;line-height:1.7}
+.enc-img-fb{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--parchment),var(--border));flex-shrink:0}
+.enc-search-wrap{display:flex;gap:10px;margin-bottom:20px}
+.cat-chip{padding:6px 14px;border-radius:20px;background:var(--parchment);font-size:12px;font-weight:500}
+/* Encyclopedia list item styles */
+.enc-item{display:flex;gap:14px;align-items:center;padding:16px;border-radius:16px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:.2s;margin-bottom:10px}
+.enc-item:hover{box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.enc-img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0}
+.info{flex:1}.ename{font-size:15px;font-weight:700}.edesc{font-size:12px;color:var(--text3);margin-top:2px}
+.ediff{font-size:11px;margin-top:4px;padding:2px 8px;border-radius:10px;display:inline-block}
+.efl{font-size:12px;color:var(--plum);margin-top:4px}
 
 /* FORTUNE */
-.fortune-wrap{max-width:600px;margin:0 auto;text-align:center}
+.fortune-wrap{max-width:700px;margin:0 auto;text-align:center}
 .fortune-header{margin-bottom:36px}
 .fortune-header h2{font-size:28px;font-weight:700;color:var(--forest)}
 .fortune-header p{font-size:14px;color:var(--text2);margin-top:6px}
@@ -157,6 +187,13 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .fr-msg{font-size:16px;line-height:1.8;color:var(--ink);margin-bottom:20px}
 .fr-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .fr-tag{padding:6px 14px;border-radius:20px;background:var(--parchment);font-size:12px;font-weight:500}
+/* Fortune mobile-shared styles */
+.fort-zone{margin-top:20px}.daily-card{padding:20px;border-radius:16px;background:var(--card);border:1px solid var(--border);margin-bottom:20px}
+.dlabel{font-size:12px;color:var(--text3)}.dtext{font-size:14px;margin-top:4px}
+.femoji{font-size:40px;margin-bottom:8px}.ftext{font-size:15px;line-height:1.7}
+.flucky{font-size:13px;color:var(--gold);margin-top:8px}.fadvice{font-size:13px;color:var(--text2);margin-top:8px}
+.month-strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.month-chip{padding:8px 14px;border-radius:14px;background:var(--card);border:1px solid var(--border);font-size:12px;text-align:center}
 
 /* MONTHLY */
 .monthly-section{margin-top:40px}
@@ -166,15 +203,22 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .monthly-card .mc-emoji{font-size:28px}
 .monthly-card .mc-name{font-size:13px;font-weight:600;margin-top:6px}
 
+/* FLOWER INFO MODAL (replaces alert) */
+.flower-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.flower-modal{background:var(--card);border-radius:20px;padding:28px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;position:relative}
+.flower-modal-close{position:absolute;top:12px;right:16px;font-size:20px;cursor:pointer;color:var(--text3);background:none;border:none}
+.flower-modal h3{font-size:20px;font-weight:700;margin-bottom:4px}
+.flower-modal .fm-latin{font-size:13px;color:var(--text3);margin-bottom:16px}
+.flower-modal .fm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.flower-modal .fm-item{padding:12px;border-radius:12px;background:var(--parchment)}
+.flower-modal .fm-label{font-size:11px;color:var(--text3);margin-bottom:2px}
+.flower-modal .fm-fact{padding:14px;border-radius:14px;background:#FFF8E1;font-size:13px;line-height:1.6;margin-top:12px}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--sage)}
-
-/* SCREENS */
-.screen{display:none;min-height:100%}
-.screen.active{display:block}
 
 </style>
 </head>
@@ -196,25 +240,18 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
     <div class="sidebar-foot">走花路 v1.0<br>植物让生活更美好</div>
   </aside>
   <div class="main-area">
-    <div class="screen" id="tab-home"><div class="tab-panel" id="tab-home-inner"></div></div>
-    <div class="screen" id="tab-identify"><div class="tab-panel" id="tab-identify-inner"></div></div>
-    <div class="screen" id="tab-gift"><div class="tab-panel" id="tab-gift-inner"></div></div>
-    <div class="screen" id="tab-encyclopedia"><div class="tab-panel" id="tab-encyclopedia-inner"></div></div>
-    <div class="screen" id="tab-fortune"><div class="tab-panel" id="tab-fortune-inner"></div></div>
+    <div class="screen" id="tab-home"></div>
+    <div class="screen" id="tab-identify"></div>
+    <div class="screen" id="tab-gift"></div>
+    <div class="screen" id="tab-encyclopedia"></div>
+    <div class="screen" id="tab-fortune"></div>
   </div>
 </div>
 
-<!-- Hidden file input for camera -->
+<!-- Hidden file input -->
 <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none">
 
 <script>
-// DEVICE DETECTION: redirect desktop users to desktop.html
-(function(){
-  var ua = navigator.userAgent || "";
-  var isMobile = /iPhone|iPad|iPod|Android|Mobile|Opera Mini|Opera Mobi/i.test(ua);
-  var forceMobile = location.search.indexOf("mode=mobile") >= 0;
-  if (!isMobile && !forceMobile) { location.replace("desktop.html"); return; }
-})();
 // Global error handler - show errors on screen for mobile debugging
 window.onerror = function(msg, url, line, col, err) {
   var d = document.getElementById("onboard-content");
@@ -2224,7 +2261,7 @@ function renderIdentify() {
 
   // API config warning
   if (!S.apiOk) {
-    html += '<div class="warn-bar warn-yellow">\u26A0\uFE0F API\u5C1A\u672A\u914D\u7F6E\uFF0C\u70B9\u51FB\u53F3\u4E0A\u89D2\u2699\uFE0F\u8BBE\u7F6E\u767E\u5EA6AI\u5BC6\u94A5\uFF08\u5DF2\u9884\u914D\u7F6E\uFF09</div>';
+    html += '<div class="warn-bar warn-yellow">\u26A0\uFE0F \u8BC6\u82B1\u670D\u52A1\u8FDE\u63A5\u4E2D\uFF0C\u8BF7\u7A0D\u5019\u91CD\u8BD5\u3002\u5982\u6301\u7EED\u65E0\u6CD5\u4F7F\u7528\uFF0C\u8BF7\u70B9\u51FB\u53F3\u4E0A\u89D2\u2699\uFE0F\u914D\u7F6E</div>';
   }
 
   // Camera area
@@ -2301,7 +2338,21 @@ function clearPhoto() {
 
 function showFlowerInfo(idx) {
   var fl = flowerDB[idx];
-  alert(fl.emoji + " " + fl.name + "\n" + fl.latin + "\n\n" + fl.desc + "\n\n\u82B1\u8BED: " + fl.lang + "\n\u82B1\u671F: " + fl.season + "\n\u6D47\u6C34: " + fl.water + "\n\u5149\u7167: " + fl.light + "\n\n\uD83D\uDCA1 " + fl.fact);
+  var html = '<div class="flower-modal-overlay" onclick="if(event.target===this)this.remove()">' +
+    '<div class="flower-modal"><button class="flower-modal-close" onclick="this.closest(\'.flower-modal-overlay\').remove()">\u2715</button>' +
+    '<h3>' + fl.emoji + ' ' + esc(fl.name) + '</h3>' +
+    '<p class="fm-latin">' + esc(fl.latin || '') + '</p>' +
+    '<p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">' + esc(fl.desc) + '</p>' +
+    '<div class="fm-row">' +
+    (fl.fl ? '<div class="fm-item"><div class="fm-label">\u82B1\u8BED</div><div>' + esc(fl.fl) + '</div></div>' : '') +
+    (fl.season ? '<div class="fm-item"><div class="fm-label">\u82B1\u671F</div><div>' + esc(fl.season) + '</div></div>' : '') +
+    '</div><div class="fm-row">' +
+    (fl.water ? '<div class="fm-item"><div class="fm-label">\u6D47\u6C34</div><div>' + esc(fl.water) + '</div></div>' : '') +
+    (fl.light ? '<div class="fm-item"><div class="fm-label">\u5149\u7167</div><div>' + esc(fl.light) + '</div></div>' : '') +
+    '</div>' +
+    (fl.fact ? '<div class="fm-fact">\uD83D\uDCA1 <b>\u8DA3\u5473\u77E5\u8BC6\uFF1A</b>' + esc(fl.fact) + '</div>' : '') +
+    '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function doIdentify() {
@@ -2741,59 +2792,11 @@ function showDailyFortune() {
   renderFortune();
 }
 
-// ========== INIT ==========
-// Check localStorage first — if saved, skip onboarding and go straight to app
-if (loadState()) {
-  Q("#scr-onboard").classList.remove("active");
-  Q("#scr-main").classList.add("active");
-  renderNav();
-  switchTab(S.tab || "home");
-  checkApiConfig();
-} else {
-  renderOnboard();
-}
 
 // Also set up file input listener
-document.addEventListener("DOMContentLoaded", function() {
-  var fi = Q("#file-input");
-  if (fi) {
-    fi.addEventListener("change", function(e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      S.photoUrl = URL.createObjectURL(file);
-      S.apiRes = null;
-      S.apiErr = null;
-      var reader = new FileReader();
-      reader.onload = function() {
-        S.photo = reader.result.split(",")[1];
-      };
-      reader.readAsDataURL(file);
-      e.target.value = "";
-      if (S.tab === "identify") renderIdentify();
-    });
   }
 });
 
-// Fallback: if nothing rendered after 1 second, try again
-setTimeout(function() {
-  var mainVisible = Q("#scr-main") && Q("#scr-main").classList.contains("active");
-  var oc = document.getElementById("onboard-content");
-  if (!mainVisible && oc && oc.innerHTML.length === 0) {
-    try {
-      if (loadState()) {
-        Q("#scr-onboard").classList.remove("active");
-        Q("#scr-main").classList.add("active");
-        renderNav();
-        switchTab(S.tab || "home");
-        checkApiConfig();
-      } else {
-        renderOnboard();
-      }
-    } catch(e) {
-      oc.innerHTML = '<div style="padding:20px;color:#c00;font-size:12px">Init failed: ' + e.message + '</div>';
-    }
-  }
-}, 1000);
 
 // ========== SERVICE WORKER (PWA) ==========
 if ('serviceWorker' in navigator) {
@@ -2802,7 +2805,7 @@ if ('serviceWorker' in navigator) {
 
 // ========== DESKTOP OVERRIDES ==========
 
-// Sidebar navigation (replaces bottom nav)
+// Sidebar navigation
 function renderNav() {
   var tabs = [
     {id:"home",icon:"🏠",name:"首页"},
@@ -2821,7 +2824,7 @@ function renderNav() {
   if (nav) nav.innerHTML = html;
 }
 
-// Enter app: show sidebar layout
+// Enter app
 function enterApp() {
   document.getElementById("scr-onboard").classList.remove("active");
   document.getElementById("app").style.display = "flex";
@@ -2829,11 +2832,10 @@ function enterApp() {
   switchTab(S.tab || "home");
 }
 
-// Onboard: centered card
+// Onboard rendering
 function renderOnboard() {
   document.getElementById("scr-onboard").classList.add("active");
   document.getElementById("app").style.display = "none";
-  // Reuse mobile onboard logic
   var el = document.getElementById("onboard-content");
   if (!S.onboardStep || S.onboardStep === 1) {
     el.innerHTML = '<h1>🌿 走花路</h1><p class="sub">植物科普 · 花艺生活</p>' +
@@ -2851,9 +2853,44 @@ function renderOnboard() {
   }
 }
 
+// Map desktop onboard functions to mobile equivalents
+function onboardNext() { if (typeof onNameSubmit === "function") onNameSubmit(); }
+function onboardPlant(id) { if (typeof selectPlant === "function") selectPlant(id); }
+
+// Quick flower info modal (replaces alert)
+function quickFlower(name) {
+  var found = null;
+  for (var i = 0; i < flowerDB.length; i++) {
+    if (flowerDB[i].n === name || flowerDB[i].n.indexOf(name) >= 0) { found = flowerDB[i]; break; }
+  }
+  if (!found) return;
+  var html = '<div class="flower-modal-overlay" onclick="if(event.target===this)this.remove()">' +
+    '<div class="flower-modal"><button class="flower-modal-close" onclick="this.closest(\'.flower-modal-overlay\').remove()">✕</button>' +
+    '<h3>' + esc(found.n) + '</h3>' +
+    (found.latin ? '<p class="fm-latin">' + esc(found.latin) + '</p>' : '') +
+    (found.desc ? '<p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">' + esc(found.desc) + '</p>' : '') +
+    '<div class="fm-row">';
+  if (found.fl) html += '<div class="fm-item"><div class="fm-label">花语</div><div>' + esc(found.fl) + '</div></div>';
+  if (found.care && found.care.w) html += '<div class="fm-item"><div class="fm-label">浇水</div><div>' + esc(found.care.w) + '</div></div>';
+  html += '</div>';
+  if (found.fun) html += '<div class="fm-fact">💡 <b>趣味知识：</b>' + esc(found.fun) + '</div>';
+  html += '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// Fix doLogout for desktop
+var _origDoLogout = doLogout;
+doLogout = function() {
+  S.name = ""; S.plant = null; S.tab = null; S.onboardStep = 1;
+  try { localStorage.removeItem("zouhualu"); } catch(e){}
+  document.getElementById("app").style.display = "none";
+  document.getElementById("scr-onboard").classList.add("active");
+  renderOnboard();
+};
+
 // Home: 4-column grid
 function renderHome() {
-  var el = document.getElementById("tab-home-inner");
+  var el = document.getElementById("tab-home");
   if (!el) return;
   var hour = new Date().getHours();
   var greet = hour < 12 ? "早上好" : hour < 18 ? "下午好" : "晚上好";
@@ -2863,8 +2900,6 @@ function renderHome() {
     html += '<div class="plant-card"><span class="pemoji">' + S.plant.emoji + '</span><span>' + S.plant.name + ' · ' + S.plant.desc + '</span></div>';
   }
   html += '</div>';
-
-  // 4-column feature cards
   html += '<div class="home-grid">';
   var cards = [
     {icon:"📷",title:"路边识花",desc:"拍照识别身边的花草",tab:"identify"},
@@ -2878,9 +2913,7 @@ function renderHome() {
       '<div class="hc-icon">' + c.icon + '</div><div class="hc-title">' + c.title + '</div><div class="hc-desc">' + c.desc + '</div></div>';
   }
   html += '</div>';
-
-  // Monthly flowers
-  if (typeof monthlyFlowers !== "undefined" && monthlyFlowers.length) {
+  if (typeof monthlyFlowers !== "undefined" && monthlyFlowers && monthlyFlowers.length) {
     var month = new Date().getMonth() + 1;
     var mf = monthlyFlowers.filter(function(f) { return f.m.indexOf(month) >= 0; });
     if (mf.length) {
@@ -2891,20 +2924,16 @@ function renderHome() {
       html += '</div></div>';
     }
   }
-
-  // Logout link
   html += '<div style="margin-top:40px;text-align:center"><span onclick="doLogout()" style="font-size:12px;color:var(--text3);cursor:pointer">重新选择灵宠</span></div>';
   el.innerHTML = html;
 }
 
 // Identify: 2-column layout
 function renderIdentify() {
-  var el = document.getElementById("tab-identify-inner");
+  var el = document.getElementById("tab-identify");
   if (!el) return;
   var html = '<h2 style="font-size:24px;font-weight:700;margin-bottom:28px">📷 路边识花</h2>';
   html += '<div class="id-layout">';
-
-  // Left: camera
   html += '<div><div class="cam-area">';
   if (S.photoUrl) {
     html += '<img src="' + S.photoUrl + '" alt="photo">';
@@ -2917,16 +2946,12 @@ function renderIdentify() {
   if (S.photoUrl) html += '<button class="cam-btn" onclick="S.photo=null;S.photoUrl=null;S.apiRes=null;S.apiErr=null;renderIdentify()">重新拍</button>';
   if (S.photo && !S.busy && !S.apiRes && !S.apiErr) html += '<button class="cam-btn primary" onclick="doIdentify()">🔍 开始识别</button>';
   html += '</div>';
-
-  // Quick flowers
   html += '<p class="sec-title">💡 快速查看常见花卉</p><div class="quick-flowers">';
-  var qf = ["玫瑰","向日葵","茉莉","绿萝","多肉"];
+  var qf = ["玫瑰","向日葵","茉莉","绿萝","多肉","薄荷","绣球","薰衣草"];
   for (var qi = 0; qi < qf.length; qi++) {
     html += '<div class="quick-chip" onclick="quickFlower(\'' + qf[qi] + '\')">' + qf[qi] + '</div>';
   }
   html += '</div></div>';
-
-  // Right: results
   html += '<div>';
   if (S.apiRes) {
     var r = S.apiRes;
@@ -2952,7 +2977,7 @@ function renderIdentify() {
   el.innerHTML = html;
 }
 
-// Switch tab (desktop version uses sidebar + screen divs)
+// Switch tab
 function switchTab(id) {
   S.tab = id;
   var screens = document.querySelectorAll(".screen");
@@ -2960,7 +2985,6 @@ function switchTab(id) {
   var target = document.getElementById("tab-" + id);
   if (target) target.classList.add("active");
   renderNav();
-  // Render tab content
   if (id === "home") renderHome();
   else if (id === "identify") renderIdentify();
   else if (id === "gift") renderGift();
@@ -2969,13 +2993,38 @@ function switchTab(id) {
   saveState();
 }
 
-// Redirect mobile users back to index.html
+// Redirect mobile users to mobile version
 (function(){
   var ua = navigator.userAgent || "";
-  if (/iPhone|iPad|iPod|Android|Mobile/i.test(ua)) {
-    location.replace("index.html");
+  var isMobile = /iPhone|iPad|iPod|Android|Mobile|Opera Mini/i.test(ua);
+  var forceMobile = location.search.indexOf("mode=mobile") >= 0;
+  if (isMobile || forceMobile) {
+    location.replace("index.html?mode=mobile");
   }
 })();
+
+// File input listener
+document.addEventListener("DOMContentLoaded", function() {
+  var fi = document.getElementById("file-input");
+  if (fi) {
+    fi.addEventListener("change", function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      S.photoUrl = URL.createObjectURL(file);
+      S.apiRes = null; S.apiErr = null;
+      var reader = new FileReader();
+      reader.onload = function() { S.photo = reader.result.split(",")[1]; };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+      if (S.tab === "identify") renderIdentify();
+    });
+  }
+});
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function() {});
+}
 
 // INIT
 if (loadState()) {
