@@ -208,6 +208,13 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none">
 
 <script>
+// DEVICE DETECTION: redirect desktop users to desktop.html
+(function(){
+  var ua = navigator.userAgent || "";
+  var isMobile = /iPhone|iPad|iPod|Android|Mobile|Opera Mini|Opera Mobi/i.test(ua);
+  var forceMobile = location.search.indexOf("mode=mobile") >= 0;
+  if (!isMobile && !forceMobile) { location.replace("desktop.html"); return; }
+})();
 // Global error handler - show errors on screen for mobile debugging
 window.onerror = function(msg, url, line, col, err) {
   var d = document.getElementById("onboard-content");
@@ -222,7 +229,7 @@ window.onunhandledrejection = function(e) {
 };
 // ========== API BASE AUTO-DETECT ==========
 // On GitHub Pages: use Cloudflare Worker; on local server: use same-origin
-var WORKER_API = "https://zouhualu-api.lynn-work.workers.dev"; // Will be set after Worker deploy
+var WORKER_API = "https://zouhualu-api.zhangaili-zal.workers.dev";
 var API_BASE = (location.hostname.indexOf("github.io") >= 0 || location.hostname.indexOf("zouhualu") >= 0) ? WORKER_API : "";
 // ========== DATA ==========
 var spiritPlants=[

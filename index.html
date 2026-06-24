@@ -222,7 +222,7 @@ window.onunhandledrejection = function(e) {
 };
 // ========== API BASE AUTO-DETECT ==========
 // On GitHub Pages: use Cloudflare Worker; on local server: use same-origin
-var WORKER_API = "https://zouhualu-api.lynn-work.workers.dev"; // Will be set after Worker deploy
+var WORKER_API = "https://zouhualu-api.zhangaili-zal.workers.dev";
 var API_BASE = (location.hostname.indexOf("github.io") >= 0 || location.hostname.indexOf("zouhualu") >= 0) ? WORKER_API : "";
 // ========== DATA ==========
 var spiritPlants=[
