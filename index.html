@@ -201,6 +201,13 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',san
 <input type="file" accept="image/*" capture="environment" id="file-input" style="display:none">
 <div id="modal-root"></div>
 <script>
+// DEVICE DETECTION: redirect desktop users to desktop.html
+(function(){
+  var ua = navigator.userAgent || "";
+  var isMobile = /iPhone|iPad|iPod|Android|Mobile|Opera Mini|Opera Mobi/i.test(ua);
+  var forceMobile = location.search.indexOf("mode=mobile") >= 0;
+  if (!isMobile && !forceMobile) { location.replace("desktop.html"); return; }
+})();
 // Global error handler - show errors on screen for mobile debugging
 window.onerror = function(msg, url, line, col, err) {
   var d = document.getElementById("onboard-content");
