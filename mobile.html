@@ -2845,14 +2845,15 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // IME composition detection for search inputs
-  document.addEventListener("compositionstart", function() { _encComposing = true; });
-  document.addEventListener("compositionend", function(e) {
-    _encComposing = false;
-    if (e.target && e.target.id === "enc-si") {
-      encSearchFn(e.target.value);
-    }
-  });
+});
+
+// IME composition detection for search inputs (outside DOMContentLoaded to survive desktop build)
+document.addEventListener("compositionstart", function() { _encComposing = true; });
+document.addEventListener("compositionend", function(e) {
+  _encComposing = false;
+  if (e.target && e.target.id === "enc-si") {
+    encSearchFn(e.target.value);
+  }
 });
 
 // Fallback: if nothing rendered after 1 second, try again
