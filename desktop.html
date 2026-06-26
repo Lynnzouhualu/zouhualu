@@ -114,12 +114,12 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .gf-chip.sel{background:var(--forest);color:#fff;border-color:var(--forest)}
 .color-dot{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s;flex-shrink:0}
 .color-dot.sel{border-color:var(--forest);box-shadow:0 0 0 3px rgba(43,74,55,.2)}
-.gr-card{border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-bottom:20px}
-.gr-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#f0f0f0}
-.gr-body{padding:24px}
+.gr-card{display:flex;flex-direction:row;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-bottom:24px;box-shadow:0 4px 20px rgba(43,74,55,.06)}
+.gr-img{width:320px;min-height:240px;object-fit:contain;display:block;background:#f5f0eb;flex-shrink:0}
+.gr-body{padding:24px 28px;flex:1;display:flex;flex-direction:column;justify-content:center}
 .gr-name{font-size:20px;font-weight:700;margin-bottom:6px}
 .gr-flowers{font-size:13px;color:var(--text2);margin-bottom:12px}
-.gr-lang{font-size:14px;color:var(--plum);font-weight:600;margin-bottom:8px}
+.gr-lang{font-size:15px;color:var(--plum);font-weight:600;margin-bottom:10px}
 .gr-bless{padding:14px 18px;border-radius:14px;background:var(--parchment);font-size:14px;line-height:1.6;margin-bottom:12px}
 .gr-meta{display:flex;gap:12px;font-size:12px;color:var(--text3)}
 .gr-overlay{position:relative}
@@ -136,7 +136,9 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .enc-card .ec-cat{font-size:12px;color:var(--text3);margin-top:2px}
 .enc-card .ec-diff{font-size:11px;margin-top:4px;padding:2px 8px;border-radius:10px;display:inline-block}
 .enc-detail{max-width:800px}
-.enc-detail img{width:100%;max-height:400px;object-fit:cover;border-radius:20px;margin-bottom:24px}
+.enc-detail img{width:auto;max-width:100%;max-height:350px;object-fit:contain;border-radius:20px;margin:0 auto 24px;display:block}
+.hero-img{width:auto;max-width:100%;max-height:350px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block}
+.hero-fb{width:300px;height:200px;border-radius:20px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:56px}
 .enc-detail h2{font-size:28px;font-weight:700;margin-bottom:4px}
 .enc-detail .ed-sub{font-size:14px;color:var(--text2);margin-bottom:24px}
 .care-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
@@ -150,8 +152,6 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue','Noto Sans SC',sys
 .enc-cat-btn.sel{background:var(--forest);color:#fff;border-color:var(--forest)}
 .fallback-img{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--parchment),var(--border))}
 /* Encyclopedia detail styles (used by mobile render shared in desktop) */
-.hero-img{width:100%;max-height:350px;object-fit:cover;border-radius:20px;margin-bottom:20px}
-.hero-fb{width:100%;height:200px;border-radius:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,var(--parchment),var(--border))}
 .dname{font-size:28px;font-weight:700}.dfl{font-size:14px;color:var(--plum);margin-bottom:20px}
 .care-item{padding:16px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:10px}
 .clabel{font-size:12px;color:var(--text3);margin-bottom:4px}
@@ -3023,6 +3023,103 @@ function renderIdentify() {
     html += '<div style="padding:60px 20px;text-align:center;color:var(--text3)"><p>上传照片后自动识别</p></div>';
   }
   html += '</div></div>';
+  el.innerHTML = html;
+}
+
+// Desktop Gift rendering - horizontal card layout
+function renderGift() {
+  var el = Q("#tab-gift");
+  if (!el) return;
+
+  // === Scene selection ===
+  if (!S.giftId) {
+    var html = '<h2 style="font-size:24px;font-weight:700;margin-bottom:6px">\uD83D\uDC90 \u82B1\u8BED\u793C\u8D60</h2>' +
+      '<p style="font-size:14px;color:var(--text2);margin-bottom:24px">\u9009\u62E9\u9001\u82B1\u573A\u666F\uFF0C\u667A\u80FD\u63A8\u8350\u82B1\u675F</p>';
+    html += '<div class="gift-grid">';
+    for (var i = 0; i < giftScenes.length; i++) {
+      var g = giftScenes[i];
+      html += '<div class="gift-card" onclick="selectGift(\'' + g.id + '\')">' +
+        '<div class="emoji">' + g.emoji + '</div><div class="gname">' + esc(g.name) + '</div></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // === Results (horizontal cards for desktop) ===
+  if (S.giftResults) {
+    var html = '<button class="gift-back" onclick="giftBack()">\u2190 \u8FD4\u56DE\u8C03\u6574</button>';
+    var sceneName = "";
+    for (var si = 0; si < giftScenes.length; si++) { if (giftScenes[si].id === S.giftId) { sceneName = giftScenes[si].name; break; } }
+    html += '<h3 style="font-size:22px;font-weight:700;margin-bottom:8px">' + sceneName + ' \u00B7 \u63A8\u8350\u82B1\u675F</h3>';
+    html += '<div class="gf-summary" style="margin-bottom:24px">';
+    var f = S.giftForm;
+    for (var wi = 0; wi < GF_WHO.length; wi++) { if (GF_WHO[wi].id === f.who) { html += '<span class="tg">\uD83D\uDC64 ' + GF_WHO[wi].n + '</span>'; break; } }
+    if (f.color) html += '<span class="tg">\uD83C\uDFA8 ' + esc(f.color) + '</span>';
+    if (f.flowers && f.flowers.length) html += '<span class="tg">\uD83C\uDF38 ' + esc(f.flowers.join("\u3001")) + '</span>';
+    html += '</div>';
+
+    for (var ri = 0; ri < S.giftResults.length; ri++) {
+      var r = S.giftResults[ri];
+      html += '<div class="gr-card">';
+      html += '<div style="position:relative;flex-shrink:0">';
+      html += '<img class="gr-img" src="' + r.img + '" alt="' + esc(r.name) + '" loading="lazy">';
+      html += '<div class="gr-match-badge">' + r.match + '% \u5339\u914D</div>';
+      html += '</div>';
+      html += '<div class="gr-body">';
+      html += '<div class="gr-name">' + esc(r.name) + '</div>';
+      html += '<div class="gr-flowers">' + esc(r.flowers.join(" \u00B7 ")) + '</div>';
+      html += '<div class="gr-lang">\u201C' + esc(r.lang) + '\u201D</div>';
+      html += '<div class="gr-bless">\uD83D\uDCDD ' + esc(r.bless) + '</div>';
+      html += '<div class="gr-meta">';
+      html += '<span class="gr-tag">\uD83D\uDCB0 ' + r.price + '\u5143</span>';
+      html += '<span class="gr-tag">\uD83C\uDF38 ' + r.stems + '\u652F/' + r.flowers.length + '\u79CD\u82B1\u6750</span>';
+      html += '</div></div></div>';
+    }
+
+    html += '<div style="text-align:center;padding:8px 0 32px">' +
+      '<span onclick="giftReset()" style="font-size:12px;color:var(--text3);cursor:pointer;letter-spacing:1px">\u91CD\u65B0\u9009\u62E9\u573A\u666F</span></div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // === Single-page Form ===
+  var f = S.giftForm;
+  var html = '<button class="gift-back" onclick="giftBack()">\u2190 \u8FD4\u56DE\u573A\u666F</button>';
+  html += '<h3 style="font-size:18px;margin:0 0 20px">\u5B9A\u5236\u4F60\u7684\u82B1\u675F</h3>';
+
+  html += '<div style="margin-bottom:24px"><p class="gf-sub" style="margin-bottom:10px">\u9001\u7ED9\u8C01\uFF08\u53EF\u9009\uFF09</p><div class="gf-chips">';
+  for (var wi = 0; wi < GF_WHO.length; wi++) {
+    var w = GF_WHO[wi];
+    html += '<div class="gf-chip' + (f.who === w.id ? ' sel' : '') + '" onclick="giftSet(\'who\',\'' + w.id + '\')">' + esc(w.n) + '</div>';
+  }
+  html += '</div></div>';
+
+  html += '<div style="margin-bottom:24px"><p class="gf-sub" style="margin-bottom:10px">\u989C\u8272\u504F\u597D\uFF08\u53EF\u9009\uFF09</p>';
+  html += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">';
+  for (var ci = 0; ci < giftColorPresets.length; ci++) {
+    var cp = giftColorPresets[ci];
+    var isSel = f.color === cp.n;
+    if (cp.h === "rainbow") {
+      html += '<div class="color-dot' + (isSel ? ' sel' : '') + '" onclick="giftSet(\'color\',\'' + cp.n + '\')" style="background:conic-gradient(#E74C3C,#F39C12,#F1C40F,#2ECC71,#3498DB,#9B59B6,#E74C3C);border-radius:50%"></div>';
+    } else {
+      html += '<div class="color-dot' + (isSel ? ' sel' : '') + '" onclick="giftSet(\'color\',\'' + cp.n + '\')" style="background:' + cp.h + '"></div>';
+    }
+  }
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px;align-items:center"><input class="inp" id="color-custom" placeholder="\u81EA\u5B9A\u4E49\u989C\u8272" value="' + esc(f.colorCustom || "") + '" style="flex:1;font-size:13px;max-width:300px">';
+  html += '<button class="btn btn-p" style="padding:10px 14px;font-size:12px" onclick="giftSet(\'colorCustom\',Q(\'#color-custom\').value)">\u786E\u5B9A</button></div>';
+  html += '</div>';
+
+  html += '<div style="margin-bottom:24px"><p class="gf-sub" style="margin-bottom:10px">\u82B1\u6750\u504F\u597D\uFF08\u53EF\u9009\uFF0C\u591A\u9009\uFF09</p><div class="gf-chips">';
+  for (var fi = 0; fi < GF_FLOWER_OPTS.length; fi++) {
+    var fo = GF_FLOWER_OPTS[fi];
+    var isFlowerSel = f.flowers && f.flowers.indexOf(fo.n) >= 0;
+    html += '<div class="gf-chip' + (isFlowerSel ? ' sel' : '') + '" onclick="giftSet(\'flower\',\'' + fo.n + '\')">' + esc(fo.n) + '</div>';
+  }
+  html += '</div></div>';
+
+  html += '<div><button class="btn btn-p" style="padding:14px 48px;font-size:15px" onclick="giftNext()">\u751F\u6210\u63A8\u8350 \u2728</button></div>';
   el.innerHTML = html;
 }
 
