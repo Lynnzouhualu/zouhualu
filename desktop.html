@@ -2987,7 +2987,7 @@ function renderIdentify() {
   html += '</div>';
   html += '<div class="cam-actions"><button class="cam-btn primary" onclick="document.getElementById(\'file-input\').click()">📷 拍照/上传</button>';
   if (S.photoUrl) html += '<button class="cam-btn" onclick="S.photo=null;S.photoUrl=null;S.apiRes=null;S.apiErr=null;renderIdentify()">重新拍</button>';
-  if (S.photo && !S.busy && !S.apiRes && !S.apiErr) html += '<button class="cam-btn primary" onclick="doIdentify()">🔍 开始识别</button>';
+  if (S.photo && !S.busy && !S.apiRes && !S.apiErr) doIdentify();
   html += '</div>';
   html += '<p class="sec-title">💡 快速查看常见花卉</p><div class="quick-flowers">';
   var qf = ["玫瑰","向日葵","茉莉","绿萝","多肉","薄荷","绣球","薰衣草"];
@@ -3014,7 +3014,7 @@ function renderIdentify() {
   } else if (!S.photoUrl) {
     html += '<div style="padding:60px 20px;text-align:center;color:var(--text3)"><div style="font-size:48px;margin-bottom:16px">🌿</div><p>拍一张花的照片<br>AI 帮你识别</p></div>';
   } else {
-    html += '<div style="padding:60px 20px;text-align:center;color:var(--text3)"><p>点击「开始识别」查看结果</p></div>';
+    html += '<div style="padding:60px 20px;text-align:center;color:var(--text3)"><p>上传照片后自动识别</p></div>';
   }
   html += '</div></div>';
   el.innerHTML = html;
@@ -3056,7 +3056,10 @@ document.addEventListener("DOMContentLoaded", function() {
       S.photoUrl = URL.createObjectURL(file);
       S.apiRes = null; S.apiErr = null;
       var reader = new FileReader();
-      reader.onload = function() { S.photo = reader.result.split(",")[1]; };
+      reader.onload = function() {
+        S.photo = reader.result.split(",")[1];
+        if (S.tab === "identify") doIdentify();
+      };
       reader.readAsDataURL(file);
       e.target.value = "";
       if (S.tab === "identify") renderIdentify();
