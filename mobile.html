@@ -2595,9 +2595,11 @@ function encImgHtml(imgUrl, cat) {
 }
 
 var _encSearchTimer = null;
+var _encComposing = false;
 function encSearchFn(q) {
   clearTimeout(_encSearchTimer);
-  _encSearchTimer = setTimeout(function() { _doEncSearch(q); }, 200);
+  if (_encComposing) return; // IME composing, wait for compositionend
+  _encSearchTimer = setTimeout(function() { _doEncSearch(q); }, 300);
 }
 function _doEncSearch(q) {
   q = (q || "").trim().toLowerCase();
@@ -2842,6 +2844,15 @@ document.addEventListener("DOMContentLoaded", function() {
       if (S.tab === "identify") renderIdentify();
     });
   }
+
+  // IME composition detection for search inputs
+  document.addEventListener("compositionstart", function() { _encComposing = true; });
+  document.addEventListener("compositionend", function(e) {
+    _encComposing = false;
+    if (e.target && e.target.id === "enc-si") {
+      encSearchFn(e.target.value);
+    }
+  });
 });
 
 // Fallback: if nothing rendered after 1 second, try again

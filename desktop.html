@@ -2636,9 +2636,11 @@ function encImgHtml(imgUrl, cat) {
 }
 
 var _encSearchTimer = null;
+var _encComposing = false;
 function encSearchFn(q) {
   clearTimeout(_encSearchTimer);
-  _encSearchTimer = setTimeout(function() { _doEncSearch(q); }, 200);
+  if (_encComposing) return; // IME composing, wait for compositionend
+  _encSearchTimer = setTimeout(function() { _doEncSearch(q); }, 300);
 }
 function _doEncSearch(q) {
   q = (q || "").trim().toLowerCase();
