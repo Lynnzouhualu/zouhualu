@@ -2070,6 +2070,7 @@ function renderOnboard() {
 
   } else if (S.step === 1) {
     c.innerHTML = '<div style="width:100%;max-width:320px;text-align:center">' +
+      '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px"><div style="width:24px;height:8px;border-radius:4px;background:#C4A25E;transition:.3s"></div><div style="width:8px;height:8px;border-radius:4px;background:#E8DFD0;transition:.3s"></div></div>' +
       '<p style="font-size:13px;color:#8A9A8E;letter-spacing:4px;margin-bottom:12px">\u7B2C\u4E00\u6B65</p>' +
       '<h2 style="font-size:24px;font-weight:700;color:#2B4A37;margin-bottom:8px">\u4F60\u53EB\u4EC0\u4E48\u540D\u5B57\uFF1F</h2>' +
       '<p style="color:#5A6B5F;font-size:14px;margin-bottom:36px">\u7ED9\u81EA\u5DF1\u53D6\u4E00\u4E2A\u82B1\u8DEF\u4E0A\u7684\u6635\u79F0\u5427</p>' +
@@ -2079,6 +2080,7 @@ function renderOnboard() {
 
   } else if (S.step === 2) {
     var html = '<div style="width:100%;max-width:320px;text-align:center">' +
+      '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px"><div style="width:8px;height:8px;border-radius:4px;background:#E8DFD0;transition:.3s"></div><div style="width:24px;height:8px;border-radius:4px;background:#C4A25E;transition:.3s"></div></div>' +
       '<p style="font-size:13px;color:#8A9A8E;letter-spacing:4px;margin-bottom:12px">\u7B2C\u4E8C\u6B65</p>' +
       '<h2 style="font-size:24px;font-weight:700;color:#2B4A37;margin-bottom:8px">\u9009\u62E9\u4F60\u7684\u7075\u5BA0</h2>' +
       '<p style="color:#5A6B5F;font-size:14px">\u9009\u4E00\u682A\u4E0E\u4F60\u7075\u9B42\u76F8\u5951\u7684\u690D\u7269</p>' +
@@ -2327,11 +2329,15 @@ function doIdentify() {
   S.apiRes = null;
   S.apiErr = null;
   renderIdentify();
+  // Channel 1: Cloudflare Worker (primary)
+  var controller = new AbortController();
+  var timeout = setTimeout(function() { controller.abort(); }, 8000);
   fetch(API_BASE + "/api/identify", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({image: S.photo})
-  }).then(function(r) { return r.json(); }).then(function(data) {
+    body: JSON.stringify({image: S.photo}),
+    signal: controller.signal
+  }).then(function(r) { clearTimeout(timeout); return r.json(); }).then(function(data) {
     S.busy = false;
     if (data.error) {
       S.apiErr = data.error;
@@ -2346,9 +2352,32 @@ function doIdentify() {
     }
     renderIdentify();
   }).catch(function(e) {
-    S.busy = false;
-    S.apiErr = "\u7F51\u7EDC\u9519\u8BEF: " + e.message;
-    renderIdentify();
+    clearTimeout(timeout);
+    // Channel 2: Direct Baidu API (fallback when Worker unreachable)
+    var BAIDU_TOKEN = "24.c1b36ebef6c08242be4812d4bb76f48b.2592000.1785037709.282335-123710237";
+    fetch("https://aip.baidubce.com/rest/2.0/image-classify/v1/plant?access_token=" + BAIDU_TOKEN, {
+      method: "POST",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: "image=" + encodeURIComponent(S.photo) + "&baike_num=1"
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      S.busy = false;
+      if (data.error_msg) {
+        S.apiErr = data.error_msg;
+      } else if (data.result && data.result.length > 0) {
+        var top = data.result[0];
+        S.apiRes = {name: top.name, score: top.score, latin: ""};
+        if (top.baike_info && top.baike_info.description) {
+          S.apiRes.desc = top.baike_info.description;
+        }
+      } else {
+        S.apiErr = "\u672A\u8BC6\u522B\u51FA\u690D\u7269\uFF0C\u8BF7\u62CD\u6E05\u6670\u7684\u82B1\u6735\u7167\u7247";
+      }
+      renderIdentify();
+    }).catch(function(e2) {
+      S.busy = false;
+      S.apiErr = "\u8BC6\u82B1\u670D\u52A1\u6682\u65F6\u4E0D\u53EF\u7528\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5\u6216\u8FDE\u63A5WiFi\u540E\u518D\u8BD5";
+      renderIdentify();
+    });
   });
 }
 
@@ -2659,7 +2688,15 @@ function renderEncyclopedia() {
       html += '<div style="padding:4px 0 8px;font-size:12px;color:var(--text2)">找到 ' + S.encSearchResults.length + " 个结果</div>";
       html += renderEncList(S.encSearchResults);
     } else {
-      html += '<div class="enc-no-result">未找到相关植物，试试其他关键词</div>';
+      html += '<div style="text-align:center;padding:40px 20px;color:var(--text3)">' +
+        '<div style="font-size:48px;margin-bottom:12px">🌱</div>' +
+        '<p style="font-size:15px;font-weight:600;margin-bottom:8px">未找到相关植物</p>' +
+        '<p style="font-size:13px;margin-bottom:16px">试试其他关键词，如"玫瑰""多肉""绿萝"</p>' +
+        '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
+        '<span class="gf-chip" onclick="encSearchFn(\'玫瑰\');document.getElementById(\'enc-si\').value=\'玫瑰\'" style="font-size:12px;padding:6px 14px">🌹 玫瑰</span>' +
+        '<span class="gf-chip" onclick="encSearchFn(\'绿萝\');document.getElementById(\'enc-si\').value=\'绿萝\'" style="font-size:12px;padding:6px 14px">🌿 绿萝</span>' +
+        '<span class="gf-chip" onclick="encSearchFn(\'多肉\');document.getElementById(\'enc-si\').value=\'多肉\'" style="font-size:12px;padding:6px 14px">🪴 多肉</span>' +
+        '</div></div>';
     }
     html += "</div>";
     el.innerHTML = html;
