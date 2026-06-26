@@ -428,7 +428,7 @@ function giftRec(sceneId, form) {
         var fr = parseInt(fc.substr(1,2),16), fg = parseInt(fc.substr(3,2),16), fb = parseInt(fc.substr(5,2),16);
         return Math.sqrt((_pr-fr)*(_pr-fr)+(_pg-fg)*(_pg-fg)+(_pb-fb)*(_pb-fb));
       }
-      var thresholds = [120, 150, 180];
+      var thresholds = [95, 120, 150];
       for (var ti = 0; ti < thresholds.length; ti++) {
         var filtered = sc.filter(function(f) { return _cDist(f) < thresholds[ti]; });
         if (filtered.length >= 3) { sc = filtered; break; }
@@ -2244,7 +2244,7 @@ function renderIdentify() {
   // Camera area
   if (S.photoUrl) {
     html += '<div class="cam-area"><img src="' + S.photoUrl + '" alt="photo">';
-    if (S.busy) {
+    if (S.busy || (S.photoUrl && !S.photo && !S.apiRes && !S.apiErr)) {
       html += '<div class="loading-overlay"><div class="spinner">\uD83C\uDF31</div><div class="ltxt">\u8BC6\u522B\u4E2D...</div></div>';
     }
     html += '</div>';
@@ -2258,9 +2258,6 @@ function renderIdentify() {
   // Camera actions
   html += '<div class="cam-actions">' +
     '<button class="cam-btn primary" onclick="document.getElementById(\'file-input\').click()">\uD83D\uDCF7 \u62CD\u7167/\u9009\u56FE</button>';
-  if (S.photo) {
-    html += '<button class="cam-btn" onclick="doIdentify()">\uD83D\uDD0D \u5F00\u59CB\u8BC6\u522B</button>';
-  }
   if (S.photoUrl) {
     html += '<button class="cam-btn" onclick="clearPhoto()">\u2716 \u6E05\u9664</button>';
   }
@@ -2268,7 +2265,8 @@ function renderIdentify() {
 
   // API Result
   if (S.apiErr) {
-    html += '<div style="margin:0 20px;padding:14px;border-radius:14px;background:#FFF3E0;color:#E65100;font-size:13px">\u274C ' + esc(S.apiErr) + '</div>';
+    html += '<div style="margin:0 20px;padding:14px;border-radius:14px;background:#FFF3E0;color:#E65100;font-size:13px">\u274C ' + esc(S.apiErr) +
+      '<div style="margin-top:10px;text-align:right"><button class="cam-btn" style="flex:none;padding:8px 16px;font-size:12px" onclick="doIdentify()">\uD83D\uDD04 \u91CD\u8BD5</button></div></div>';
   }
   if (S.apiRes) {
     var r = S.apiRes;
@@ -2829,6 +2827,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var reader = new FileReader();
       reader.onload = function() {
         S.photo = reader.result.split(",")[1];
+        if (S.tab === "identify") doIdentify();
       };
       reader.readAsDataURL(file);
       e.target.value = "";
