@@ -11,6 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="走花路">
 <title>走花路</title>
 <style>
+/* Desktop redirect loading indicator - prevents white screen flash */
+@media(min-width:768px) and (pointer:fine){
+  body{background:#FAF5EC!important}
+  #scr-onboard,#scr-main,#file-input,#modal-root,.nav{display:none!important}
+  body::after{content:"走花路 · 加载中...";position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:-apple-system,'PingFang SC',sans-serif;font-size:16px;color:#2B4A37;letter-spacing:4px;animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+}
+</style>
+<style>
 :root{--cream:#FAF5EC;--parchment:#F2E8D5;--forest:#2B4A37;--forest-mid:#3D6B52;--forest-light:#5A8F6E;--sage:#8EAD9A;--terra:#C4735A;--gold:#C4A25E;--plum:#7B5070;--ink:#1E2A22;--text2:#5A6B5F;--text3:#8A9A8E;--card:#fff;--border:#E8DFD0;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;height:-webkit-fill-available}
