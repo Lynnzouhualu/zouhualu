@@ -2594,9 +2594,14 @@ function encImgHtml(imgUrl, cat) {
   return '<div class="enc-img-fb" style="background:' + bg + '">' + em + '</div>';
 }
 
+var _encSearchTimer = null;
 function encSearchFn(q) {
+  clearTimeout(_encSearchTimer);
+  _encSearchTimer = setTimeout(function() { _doEncSearch(q); }, 200);
+}
+function _doEncSearch(q) {
   q = (q || "").trim().toLowerCase();
-  if (!q) { S.encSearchResults = null; S.encSearch = ""; renderEncyclopedia(); return; }
+  if (!q) { S.encSearchResults = null; S.encSearch = ""; renderEncyclopedia(); _restoreEncFocus(); return; }
   S.encSearch = q;
   var results = [];
   var seen = {};
@@ -2617,6 +2622,15 @@ function encSearchFn(q) {
   }
   S.encSearchResults = results;
   renderEncyclopedia();
+  _restoreEncFocus();
+}
+function _restoreEncFocus() {
+  var inp = document.getElementById("enc-si");
+  if (inp) {
+    inp.focus();
+    var len = inp.value.length;
+    try { inp.setSelectionRange(len, len); } catch(e) {}
+  }
 }
 
 function renderEncList(items) {
